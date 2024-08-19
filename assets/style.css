@@ -31,6 +31,7 @@ footer, header, hgroup, menu, nav, section {
 }
 body {
 	line-height: 1;
+	background-color: #FFFEF8;
 }
 ol, ul {
 	list-style: none;
@@ -180,7 +181,7 @@ li:hover {
 
 #login{
 	width: 100%;
-	height: 100vh;
+	height: 80vh;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -215,6 +216,106 @@ li:hover {
 	font-size: 14px;
 	text-decoration: none;
 	color: black;
+}
+
+.error-login{
+	outline: crimson 1px solid !important;
+	animation: wiggle 0.3s;
+}
+
+#popup {
+	position: fixed;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100vh;
+	background-color: rgba(0, 0, 0, 0.8);
+	justify-content: center;
+	align-items: center
+}
+
+#popup > div {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	background-color: white;
+	width: 530px;
+	height: fit-content;
+	padding: 50px;
+	border-radius: 5px;
+}
+
+#popup > div > button {
+	background-color: #1D6154;
+	color: white;
+	border: none;
+	height: 37px;
+	width: 237px;
+	font-family: 'Syne';
+	font-weight: 700;
+	font-size: 14px;
+	border-radius: 90px;
+	text-align: center;
+	padding: 5px 20px;
+	margin: 20px 5px 50px 5px;
+	cursor: pointer;
+}
+
+#popup h2 {
+	font-family: work sans;
+	color: black;
+	font-size: 26px;
+	font-weight: 400;	
+	padding: 30px;
+}
+
+#popup .fa-xmark{
+	position: absolute;
+	margin-top: -30px;
+	margin-left: 280px;
+	cursor: pointer;
+}
+
+#existingPhotos {
+	width: 420px;
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 6px;
+	flex-wrap: wrap;
+	margin-bottom: 50px;
+}
+
+.photo img {
+	height: 104px;
+}
+
+.photo button {
+	position: absolute;
+	margin-top: -100px;
+	margin-left: 55px;
+	border-radius: 2px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 17px;
+	width: 17px;
+	background-color: black;
+	border: none;
+	cursor: pointer;
+	color: white;
+	font-size: 9px;
+}
+
+.line{
+	height: 1px;
+	width: 420px;
+	background-color: #B3B3B3;
+	margin-bottom: 30px;
 }
 
 #contact {
@@ -273,10 +374,34 @@ input[type="submit"]{
 	border-radius: 60px ;
 }
 
-footer nav ul {
+footer {
 	display: flex;
 	justify-content: flex-end;
+	align-items: center;
+	background-color: white;
+	height: 60px;
+	padding: 0.5em;
+}
+
+footer nav ul {
 	font-size: 14px;
 	margin: 2em
 }
 
+@keyframes wiggle {
+	0% {
+		transform: translateX(0);
+	}
+	25% {
+		transform: translateX(3px);
+	}
+	50% {
+		transform: translateX(-3px);
+	}
+	75% {
+		transform: translateX(3px);
+	}
+	100% {
+		transform: translateX(0);
+	}
+}
