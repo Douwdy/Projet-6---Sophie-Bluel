@@ -4,6 +4,7 @@ const galleryLoc = document.querySelector(".gallery");
 const categoryButtons = document.querySelectorAll("[data-category-id]");
 const popup = document.getElementById('popup');
 const pageBody = document.querySelector('main');
+const popupContent = document.getElementById('popupContent');
 
 // Requête API pour récupérer les projets
 fetch(`${apiLink}/works`)
@@ -42,6 +43,46 @@ fetch(`${apiLink}/works`)
 
     displayProjects(allProjects);
   });
+
+  function login() {
+    const email = document.getElementById('emailLogin').value;
+    const password = document.getElementById('passwordLogin').value;
+  
+    fetch(`${apiLink}/users/login`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "email": email,
+        "password": password
+      })
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (!data.token) {
+        alert('Email ou mot de passe incorrect');
+        document.getElementById('passwordLogin').classList.add('error-login');
+      } else {
+        console.log('Token received, logging in...');
+        localStorage.setItem('token', data.token);
+        console.log('Calling loginDisplay()...');
+        loginDisplay(); // Retire la page de connexion
+        console.log('Calling worksDisplay()...');
+        worksDisplay(); // Affiche la page d'ajout de projet
+      }
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  };
+
 // Fonction pour afficher les projets
 function displayProjects(projects) {
   galleryLoc.innerHTML = "";
@@ -56,15 +97,6 @@ function displayProjects(projects) {
     galleryLoc.appendChild(projectElement);
   });
 }
-
-// Ajouter la classe active au bouton cliqué
-function addActiveClass(button) {
-  categoryButtons.forEach((btn) => {
-    btn.classList.remove("active");
-  });
-  button.classList.add("active");
-}
-
 
 // Fonction pour afficher la page de connexion
 function loginDisplay() {
@@ -84,86 +116,83 @@ function loginDisplay() {
 }
 
 // Affiche la popup pour ajouter un nouveau projet
-  function worksDisplay() {
-    // Affiche la popup
-    popup.style.display = "flex";
-    // Fetch les projets de la base de données
-    fetch(`${apiLink}/works`)
-      .then((response) => response.json())
-      .then((data) => {
-        // Affiche les projets dans la page d'ajout de projet
-        data.forEach((element) => {
-          const existingPhotos = document.getElementById('existingPhotos');
-          existingPhotos.innerHTML += `
-          <article class="photo">
-            <img src="${element.imageUrl}" alt="${element.title}">
-            <button class="photo-delete" data-id="${element.id}"><i class="fa-solid fa-trash-can"></i></button>
-          </article>
-          `;
-        });
-      });
-  };
-
-function login() {
-  const email = document.getElementById('emailLogin').value;
-  const password = document.getElementById('passwordLogin').value;
-
-  fetch(`${apiLink}/users/login`, {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      "email": email,
-      "password": password
-    })
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response.json();
-  })
-  .then(data => {
-    if (!data.token) {
-      alert('Email ou mot de passe incorrect');
-      document.getElementById('passwordLogin').classList.add('error-login');
-    } else {
-      console.log('Token received, logging in...');
-      localStorage.setItem('token', data.token);
-      console.log('Calling loginDisplay()...');
-      loginDisplay(); // Retire la page de connexion
-      console.log('Calling worksDisplay()...');
-      worksDisplay(); // Affiche la page d'ajout de projet
-    }
-  })
-  .catch(error => {
-    console.error(error);
-  });
-};
-// Ajoute une photo au projet
-function addPhoto() {
-  // Envoie une requête POST pour ajouter une nouvelle photo (contient le titre, l'image et la catégorie du projet)
-  fetch(`${apiLink}/works`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      title: document.getElementById("title").value,
-      imageUrl: document.getElementById("imageUrl").value,
-      category: document.getElementById("category").value,
-    }),
-  })
+function worksDisplay() {
+  // Affiche la popup
+  popup.style.display = "flex";
+  const existingPhotos = document.getElementById('existingPhotos');
+  existingPhotos.innerHTML = '';
+  // Fetch les projets de la base de données
+  fetch(`${apiLink}/works`)
     .then((response) => response.json())
     .then((data) => {
-      // Si l'ajout a été reussi, affiche la page d'ajout de projet et le corps de la page
-      if (data) {
-        worksDisplay();
-      }
+      // Affiche les projets dans la page d'ajout de projet
+      data.forEach((element) => {
+        existingPhotos.innerHTML += `
+        <article class="photo">
+          <img src="${element.imageUrl}" alt="${element.title}">
+          <button class="photo-delete" data-id="${element.id}"><i class="fa-solid fa-trash-can"></i></button>
+        </article>
+        `;
+      });
     });
 };
+
+// Ajoute une photo au projet
+function addPhoto() {
+  // Affiche la popup
+  popupContent.innerHTML = `
+  <div class="popup-header">
+    <i class="fas fa-arrow-left" id="backToGallery"></i>
+    <i class="fa-solid fa-xmark" id="closePopup"></i>
+  </div>
+  <h2>Ajout photo</h2>
+			<form id="photoAddForm">
+			  <div class="photo-upload">
+				<i class="fas fa-image"></i>
+				<div>
+					<input type="file" id="photoImport">
+					<label for="photoImport" class="upload-button">+ Ajouter photo</label>
+				</div>
+				<p>jpg, png: 4mo max</p>
+			  </div>
+			  <div class="photo-desc">
+				<label for="photoTitle">Titre</label>
+				<input type="text" id="photoTitle">
+				<label for="photoCategory">Catégorie</label>
+				<select id="photoCategory">
+					<option value=""></option>
+					<option value="Objets">Objets</option>
+					<option value="Appartements">Appartements</option>
+					<option value="Hotels & restaurants">Hotels & restaurants</option>
+				</select>
+			  </div>
+        <div class="line"></div>
+			  <button type="submit">Valider</button>
+			</form>
+  `;
+  document.getElementById('backToGallery').addEventListener('click', backToGallery);
+  document.querySelector('.fa-xmark').addEventListener('click', function() {
+    popup.style.display = "none";
+  });
+};
+
+function backToGallery() {
+  document.getElementById("closePopup").style.marginTop = '-320px';
+  popupContent.innerHTML = `
+  		<i class="fa-solid fa-xmark"></i>
+		  <h2>Galerie Photo</h2>
+		  <div id="existingPhotos">
+		  </div>
+		  <div class="line"></div>
+		  <button id="addPhoto">Ajouter une photo</button>
+  `;
+  worksDisplay();
+  document.querySelector('.fa-xmark').addEventListener('click', function() {
+    popup.style.display = "none";
+  });
+  document.getElementById('addPhoto').addEventListener('click', addPhoto);
+}
+
 // Supprime la photo du projet
 function deletePhoto(id) {
   // Envoie une requête DELETE pour supprimer la photo du projet
@@ -195,16 +224,33 @@ deleteButtons.forEach(button => {
 });
 
 // Si l'utilisateur est connecté, affiche la page d'ajout de projet, sinon affiche la page de connexion
-const loginBtn = document.querySelector('form').addEventListener('submit', function(event) {
+document.querySelector('form').addEventListener('submit', function(event) {
   event.preventDefault();
-    login(); // Envoie une requête POST pour se connecter
+    login();
+    loginDisplay(); // Envoie une requête POST pour se connecter
 });
 
 // EventListener pour la fermeture de la popup
-const closeBtn = document.querySelector('.fa-xmark');
-closeBtn.addEventListener('click', function() {
+document.querySelector('.fa-xmark').addEventListener('click', function() {
   popup.style.display = "none";
-  const existingPhotos = document.getElementById('existingPhotos');
-  existingPhotos.innerHTML = '';
 });
 
+document.getElementById('loginForm').addEventListener('click', loginDisplay);
+
+document.getElementById('addPhoto').addEventListener('click', addPhoto);
+
+// Ajouter la classe active au bouton cliqué
+function addActiveClass(button) {
+  categoryButtons.forEach((btn) => {
+    btn.classList.remove("active");
+  });
+  button.classList.add("active");
+}
+
+
+// Ajoute à chaque bouton de catégorie la classe 'active' au clic
+categoryButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    addActiveClass(button);
+  });
+});

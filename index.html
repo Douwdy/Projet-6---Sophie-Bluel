@@ -19,7 +19,7 @@
 	<nav>
 		<a href="#portfolio">projets</a>
 		<a href="#contact">contact</a>
-		<a onclick="loginDisplay()">login</a>
+		<a href="#" id="loginForm">login</a>
 		<a href="#"><img src="./assets/icons/instagram.webp" alt="Instagram"></a>
 	</nav>
 </header>
@@ -36,13 +36,13 @@
   </section>
 <main>
 	<section id="popup" style="display: none;">
-		<div>
-		  <a onclick=""><i class="fa-solid fa-xmark"></i></a>
+		<div id="popupContent">
+		  <i class="fa-solid fa-xmark"></i>
 		  <h2>Galerie Photo</h2>
 		  <div id="existingPhotos">
 		  </div>
 		  <div class="line"></div>
-		  <button onclick="addPhoto()">Ajouter une photo</button>
+		  <button id="addPhoto">Ajouter une photo</button>
 		</div>
 	  </section>
 	<section id="introduction">
@@ -59,10 +59,10 @@
 	<section id="portfolio">
 		<h2>Mes Projets</h2>
 		<div class="buttons">
-			<button class="active" data-category-id="All" onclick="addActiveClass(this)">Tous</button>
-			<button data-category-id="Objets" onclick="addActiveClass(this)">Objets</button>
-			<button data-category-id="Appartements" onclick="addActiveClass(this)">Appartements</button>
-			<button data-category-id="Hotels & restaurants" onclick="addActiveClass(this)">Hotels & restaurants</button>
+			<button class="active category-button" data-category-id="All">Tous</button>
+			<button class="category-button" data-category-id="Objets">Objets</button>
+			<button class="category-button" data-category-id="Appartements">Appartements</button>
+			<button class="category-button" data-category-id="Hotels & restaurants">Hotels & restaurants</button>
 		</div>
 		<div class="gallery">
 			
