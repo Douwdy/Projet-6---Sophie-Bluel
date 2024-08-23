@@ -1,10 +1,10 @@
 // Variables utilitaires
-const apiLink = "http://127.0.0.1:5678/api"
-const galleryLoc = document.querySelector(".gallery");
-const categoryButtons = document.querySelectorAll("[data-category-id]");
-const popup = document.getElementById('popup');
-const pageBody = document.querySelector('main');
-const popupContent = document.getElementById('popupContent');
+const apiLink = "http://127.0.0.1:5678/api" // Lien vers l'API
+const galleryLoc = document.querySelector(".gallery"); // Localisation de la galerie de projets
+const categoryButtons = document.querySelectorAll("[data-category-id]"); // Localisation des boutons par catégorie
+const popup = document.getElementById('popup'); // Localisation de la popup
+const pageBody = document.querySelector('main'); // Localisation du contenu de la page
+const popupContent = document.getElementById('popupContent'); // Localisation du contenu de la popup
 
 // Requête API pour récupérer les projets
 fetch(`${apiLink}/works`)
@@ -44,10 +44,12 @@ fetch(`${apiLink}/works`)
     displayProjects(allProjects);
   });
 
+  // Fonction pour gérer la connexion d'un utilisateur
   function login() {
+    // Récupération des valeurs des champs de saisie pour l'email et le mot de passe
     const email = document.getElementById('emailLogin').value;
     const password = document.getElementById('passwordLogin').value;
-  
+    // Envoi d'une requête POST à l'API pour tenter de se connecter
     fetch(`${apiLink}/users/login`, {
       method: 'POST',
       headers: {
@@ -60,23 +62,25 @@ fetch(`${apiLink}/works`)
       })
     })
     .then(response => {
+      // Vérification si la réponse est OK (200-299)
       if (!response.ok) {
+        // Si la réponse n'est pas OK, on gère l'erreur et on l'indique à l'utilisateur
+        document.getElementById('passwordLogin').value = '';
+        document.getElementById('passwordLogin').classList.add('error-login');
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+      // Si la réponse est OK, on récupère les données de la réponse
       return response.json();
     })
     .then(data => {
-      if (!data.token) {
-        alert('Email ou mot de passe incorrect');
-        document.getElementById('passwordLogin').classList.add('error-login');
-      } else {
-        console.log('Token received, logging in...');
-        localStorage.setItem('token', data.token);
-        console.log('Calling loginDisplay()...');
+        // On vide les champs de la page de connexion
+        document.getElementById('emailLogin').value = '';
+        document.getElementById('passwordLogin').value = '';
+        // On retire la classe d'erreur de mot de passe
+        document.getElementById('passwordLogin').classList.remove('error-login');
         loginDisplay(); // Retire la page de connexion
-        console.log('Calling worksDisplay()...');
         worksDisplay(); // Affiche la page d'ajout de projet
-      }
+        localStorage.setItem('token', data.token); // Sauvegarde le token dans le localStorage
     })
     .catch(error => {
       console.error(error);
@@ -138,7 +142,7 @@ function worksDisplay() {
 };
 
 // Ajoute une photo au projet
-function addPhoto() {
+function addPhotoDisplay() {
   // Affiche la popup
   popupContent.innerHTML = `
   <div class="popup-header">
@@ -167,17 +171,58 @@ function addPhoto() {
 				</select>
 			  </div>
         <div class="line"></div>
-			  <button type="submit">Valider</button>
+			  <button type="submit" id="submitPhoto">Valider</button>
 			</form>
   `;
-  document.getElementById('backToGallery').addEventListener('click', backToGallery);
-  document.querySelector('.fa-xmark').addEventListener('click', function() {
+// Localisation de l'input d'importation de la photo
+const photoInput = document.getElementById('photoImport');
+// Localisation du champ d'affichage de la photo
+const photoUpload = document.querySelector('.photo-upload');
+
+// Ajoute un eventListener pour l'importation de la photo
+photoInput.addEventListener('change', function() {
+  // Récupère le fichier sélectionné
+  const file = this.files[0];
+  // Si un fichier est importé
+  if (file) {
+    // Lecture du contenu du fichier
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      // Stocke la photo importée
+      const imageData = event.target.result;
+      // Crée une nouvelle balise img
+      const image = document.createElement('img');
+      // Formatage de la balise pour l'affichage
+      image.src = imageData;
+      image.alt = 'Photo importée';
+      image.style.height = '100%';
+
+      // Vide le champ d'affichage de la photo et l'affiche
+      photoUpload.innerHTML = '';
+      photoUpload.appendChild(image);
+      // Conserve la balise photoInput
+      photoUpload.appendChild(photoInput);
+    };
+    // Lire le contenu du fichier
+    reader.readAsDataURL(file);
+  } else {
+    photoUpload.innerHTML = '';
+  }
+});
+
+  document.getElementById('submitPhoto').addEventListener('click', function(event) {
+    event.preventDefault();
+    sendNewPhoto();
+  }); // Ajoute un eventListener pour l'envoi de la photo
+  document.getElementById('backToGallery').addEventListener('click', backToGallery); // Ajoute un eventListener pour le bouton Retour
+  document.querySelector('.fa-xmark').addEventListener('click', function() { // Ajoute un eventListener pour la fermeture de la popup
     popup.style.display = "none";
   });
 };
 
-function backToGallery() {
-  document.getElementById("closePopup").style.marginTop = '-320px';
+// Retourne à la page d'ajout de projet
+function backToGallery() { 
+  // Affiche la page d'ajout de projet
   popupContent.innerHTML = `
   		<i class="fa-solid fa-xmark"></i>
 		  <h2>Galerie Photo</h2>
@@ -186,11 +231,14 @@ function backToGallery() {
 		  <div class="line"></div>
 		  <button id="addPhoto">Ajouter une photo</button>
   `;
+  // Affiche la liste des projets
   worksDisplay();
+  // Ajoute un eventListener pour la fermeture de la popup
   document.querySelector('.fa-xmark').addEventListener('click', function() {
     popup.style.display = "none";
   });
-  document.getElementById('addPhoto').addEventListener('click', addPhoto);
+  // Ajoute un eventListener pour l'ajout d'un nouveau projet
+  document.getElementById('addPhoto').addEventListener('click', addPhotoDisplay);
 }
 
 // Supprime la photo du projet
@@ -215,19 +263,56 @@ function deletePhoto(id) {
 };
 
 // EventListener pour la suppression de la photo
-const deleteButtons = existingPhotos.querySelectorAll('.photo-delete');
+const deleteButtons = existingPhotos.querySelectorAll('.photo-delete'); // Localisation des boutons de suppression
+// Ajoute un eventListener pour chaque bouton de suppression
 deleteButtons.forEach(button => {
   button.addEventListener('click', (event) => {
     const id = event.target.getAttribute('data-id');
+    // Appel de la fonction pour supprimer la photo avec l'ID correspondant
     deletePhoto(id);
   });
 });
 
+function sendNewPhoto() {
+  // Récupère le token dans le localStorage
+  const token = localStorage.getItem('token');
+  // Récupère les informations du formulaire (image, titre et catégorie)
+  const image = document.getElementById('photoImport').files[0];
+  const title = document.getElementById('photoTitle').value;
+  const category = document.getElementById('photoCategory').value;
+
+  // Récupère le contenu de l'image
+  const reader = new FileReader();
+  // Lecture du contenu de l'image
+  reader.onload = function(event) {
+    // Stocke l'image importée et la convertie en Blob (image binaire)
+    const imageData = event.target.result;
+    const blob = new Blob([imageData], { type: image.type });
+    // Envoie une requête POST pour ajouter la photo (image(blob), titre et catégorie)
+    const formData = new FormData();
+    formData.append('image', blob);
+    formData.append('title', title);
+    formData.append('category', category);
+
+    fetch(`${apiLink}/works`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      body: formData,
+    })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error(error));
+  };
+  // Lire le contenu de l'image
+  reader.readAsBinaryString(image);
+}
+
 // Si l'utilisateur est connecté, affiche la page d'ajout de projet, sinon affiche la page de connexion
 document.querySelector('form').addEventListener('submit', function(event) {
   event.preventDefault();
-    login();
-    loginDisplay(); // Envoie une requête POST pour se connecter
+    login(); // Envoie une requête POST pour se connecter
 });
 
 // EventListener pour la fermeture de la popup
@@ -235,22 +320,14 @@ document.querySelector('.fa-xmark').addEventListener('click', function() {
   popup.style.display = "none";
 });
 
-document.getElementById('loginForm').addEventListener('click', loginDisplay);
+document.getElementById('loginForm').addEventListener('click', loginDisplay); // Ajoute un eventListener pour l'affichage de la page de connexion
 
-document.getElementById('addPhoto').addEventListener('click', addPhoto);
+document.getElementById('addPhoto').addEventListener('click', addPhotoDisplay); // Ajoute un eventListener pour l'affichage de la page d'ajout de projet
 
-// Ajouter la classe active au bouton cliqué
-function addActiveClass(button) {
-  categoryButtons.forEach((btn) => {
-    btn.classList.remove("active");
-  });
-  button.classList.add("active");
-}
-
-
-// Ajoute à chaque bouton de catégorie la classe 'active' au clic
+// Ajoute la classe active au bouton cliqué et supprime les autres
 categoryButtons.forEach(button => {
   button.addEventListener('click', () => {
-    addActiveClass(button);
+    categoryButtons.forEach(btn => btn.classList.remove("active"));
+    button.classList.add("active");
   });
 });
