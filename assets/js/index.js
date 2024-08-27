@@ -5,6 +5,7 @@ const categoryButtons = document.querySelectorAll("[data-category-id]"); // Loca
 const popup = document.getElementById('popup'); // Localisation de la popup
 const pageBody = document.querySelector('main'); // Localisation du contenu de la page
 const popupContent = document.getElementById('popupContent'); // Localisation du contenu de la popup
+const token = localStorage.getItem('token'); // Récupération du token depuis le localStorage
 
 const objetsCategoryID = 1;
 const appartementsCategoryID = 2;
@@ -12,8 +13,6 @@ const hotelsCategoryID = 3;
 
 // Vérification de validité du token
 function checkToken() {
-  // Récupération du token depuis le localStorage
-  const token = localStorage.getItem('token');
   if (token) {
     // décodage du token
     // Décode le token et extrait la propriété "exp"
@@ -171,12 +170,11 @@ function worksDisplay() {
       });
   // EventListener pour la suppression de la photo
   const deleteButtons = existingPhotos.querySelectorAll('.photo-delete'); // Localisation des boutons de suppression
-  console.log(deleteButtons);
   // Ajoute un eventListener pour chaque bouton de suppression
   deleteButtons.forEach(button => {
     button.addEventListener('click', (event) => {
-      const id = event.target.getAttribute('data-id');
-      console.log(id);
+      // Récupère l'ID de la photo à supprimer
+      const id = event.target.dataset.id;
       // Appel de la fonction pour supprimer la photo avec l'ID correspondant
       deletePhoto(id);
     });
@@ -207,16 +205,30 @@ function addPhotoDisplay() {
 				<input type="text" id="photoTitle">
 				<label for="photoCategory">Catégorie</label>
 				<select id="photoCategory">
-					<option value=""></option>
-					<option value="1">Objets</option>
-					<option value="2">Appartements</option>
-					<option value="3">Hotels & restaurants</option>
+          <option value=""></option>
 				</select>
 			  </div>
         <div class="line"></div>
 			  <button type="submit" id="submitPhoto">Valider</button>
 			</form>
   `;
+    // Récupère les catégories de projets
+    fetch(`${apiLink}/categories`)
+    .then((response) => response.json())
+    .then((data) => {
+      // Affiche les catégories dans le formulaire
+      const select = document.getElementById('photoCategory');
+      // Pour chaque catégorie, crée une option dans le select
+      data.forEach((category) => {
+        const option = document.createElement('option');
+        // Ajoute l'ID de la catégorie en tant que valeur de l'option
+        option.value = category.id;
+        // Ajoute le nom de la catégorie en tant que texte de l'option
+        option.textContent = category.name;
+        // Insère l'option dans le select
+        select.appendChild(option);
+      })
+    });
 // Localisation de l'input d'importation de la photo
 const photoInput = document.getElementById('photoImport');
 // Localisation du champ d'affichage de la photo
@@ -286,26 +298,33 @@ function backToGallery() {
 
 // Supprime la photo du projet
 function deletePhoto(id) {
-  // Envoie une requête DELETE pour supprimer la photo du projet
-  fetch(`${apiLink}/works/${id}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      "token": localStorage.getItem("token"),
-    },
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      // Si la suppression a été réussie, retirer la photo de la page d'ajout de projet et du corps de la page
-      if (data) {
-        const button = document.querySelector(`.photo-delete[data-id="${id}"]`);
-        const photo = button.parentNode;
-        photo.remove();
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+  // Créer une nouvelle requête XHR
+  const xhr = new XMLHttpRequest();
+
+  // Configurer la requête
+  xhr.open('DELETE', `${apiLink}/works/${id}`, true);
+  xhr.setRequestHeader('Accept', '*/*');
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+
+  // Envoyer la requête
+  xhr.send();
+
+  // Gérer la réponse de la requête
+  xhr.onload = function() {
+    if (xhr.status >= 200 && xhr.status < 300) {
+      // Si la requête est réussie, supprimer la photo de la page
+      const button = document.querySelector(`.photo-delete[data-id="${id}"]`);
+      const photo = button.parentNode;
+      photo.remove();
+    } else {
+      console.error(xhr.statusText);
+    }
+  };
+  // Gérer les erreurs de la requête
+  xhr.onerror = function() {
+    console.error('Une erreur est survenue lors de la requête.');
+  };
 }
 
 // Fonction pour envoyer une nouvelle photo au serveur
@@ -322,11 +341,12 @@ function sendNewPhoto() {
   const title = document.getElementById('photoTitle').value;
   const category = document.getElementById('photoCategory').value;
 
+  // Vérifier que les données du formulaire sont complètes
   if (!image || !title || !category) {
     console.error('Données du formulaire incomplètes');
     return;
   }
-  console.log(image, title, category);
+
   // Utiliser FormData pour envoyer l'image
   const formData = new FormData();
   formData.append('image', image, image.name);
@@ -346,8 +366,10 @@ function sendNewPhoto() {
   // Gérer la réponse de la requête
   xhr.onload = function() {
     if (xhr.status >= 200 && xhr.status < 300) {
+      // Si la requête est réussie, afficher un message de succès
       console.log(xhr.responseText);
     } else {
+      // Sinon, afficher un message d'erreur
       console.error(xhr.statusText);
     }
   };
