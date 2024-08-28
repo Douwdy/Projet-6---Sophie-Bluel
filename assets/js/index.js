@@ -7,10 +7,6 @@ const pageBody = document.querySelector('main'); // Localisation du contenu de l
 const popupContent = document.getElementById('popupContent'); // Localisation du contenu de la popup
 const token = localStorage.getItem('token'); // Récupération du token depuis le localStorage
 
-const objetsCategoryID = 1;
-const appartementsCategoryID = 2;
-const hotelsCategoryID = 3;
-
 // Vérification de validité du token
 function checkToken() {
   if (token) {
@@ -36,9 +32,9 @@ function checkToken() {
 
 checkToken();
 
-
-// Requête API pour récupérer les projets
-fetch(`${apiLink}/works`)
+function refreshProjects() {
+  // Requête API pour récupérer les projets
+  fetch(`${apiLink}/works`)
   .then((response) => response.json())
   .then((data) => {
     // Création d'un objet pour grouper les projets par catégorie
@@ -73,6 +69,9 @@ fetch(`${apiLink}/works`)
 
     displayProjects(allProjects);
   });
+}
+
+refreshProjects();
 
   // Fonction pour gérer la connexion d'un utilisateur
   function login() {
@@ -119,7 +118,9 @@ fetch(`${apiLink}/works`)
 
 // Fonction pour afficher les projets
 function displayProjects(projects) {
+  // Vide la galerie de projets
   galleryLoc.innerHTML = "";
+  // Pour chaque projet, crée un élément HTML
   projects.forEach((project) => {
     const projectElement = document.createElement("div");
     projectElement.innerHTML += `
@@ -162,7 +163,7 @@ function worksDisplay() {
       // Affiche les projets dans la page d'ajout de projet
       data.forEach((element) => {
         existingPhotos.innerHTML += `
-        <article class="photo">
+        <article class="photo" id="${element.id}">
           <img src="${element.imageUrl}" alt="${element.title}">
           <button class="photo-delete" data-id="${element.id}"><i class="fa-solid fa-trash-can"></i></button>
         </article>
@@ -172,11 +173,15 @@ function worksDisplay() {
   const deleteButtons = existingPhotos.querySelectorAll('.photo-delete'); // Localisation des boutons de suppression
   // Ajoute un eventListener pour chaque bouton de suppression
   deleteButtons.forEach(button => {
-    button.addEventListener('click', (event) => {
+    button.addEventListener('click', () => {
       // Récupère l'ID de la photo à supprimer
-      const id = event.target.dataset.id;
+      const id = button.dataset.id;
       // Appel de la fonction pour supprimer la photo avec l'ID correspondant
       deletePhoto(id);
+      // Retire la photo de la galerie
+      document.getElementById(id).remove();
+      // Rafraîchit la galerie
+      refreshProjects();
     });
   });
     });
@@ -195,16 +200,16 @@ function addPhotoDisplay() {
 			  <div class="photo-upload">
 				<i class="fas fa-image"></i>
 				<div>
-					<input type="file" id="photoImport">
+					<input type="file" id="photoImport" required>
 					<label for="photoImport" class="upload-button">+ Ajouter photo</label>
 				</div>
 				<p>jpg, png: 4mo max</p>
 			  </div>
 			  <div class="photo-desc">
 				<label for="photoTitle">Titre</label>
-				<input type="text" id="photoTitle">
+				<input type="text" id="photoTitle" required>
 				<label for="photoCategory">Catégorie</label>
-				<select id="photoCategory">
+				<select id="photoCategory" required>
           <option value=""></option>
 				</select>
 			  </div>
@@ -303,27 +308,18 @@ function deletePhoto(id) {
 
   // Configurer la requête
   xhr.open('DELETE', `${apiLink}/works/${id}`, true);
-  xhr.setRequestHeader('Accept', '*/*');
-  xhr.setRequestHeader('Content-Type', 'application/json');
   xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-
   // Envoyer la requête
   xhr.send();
 
-  // Gérer la réponse de la requête
   xhr.onload = function() {
     if (xhr.status >= 200 && xhr.status < 300) {
-      // Si la requête est réussie, supprimer la photo de la page
-      const button = document.querySelector(`.photo-delete[data-id="${id}"]`);
-      const photo = button.parentNode;
-      photo.remove();
+      // Si la requête est réussie, rafraîchir la galerie
+      refreshProjects();
     } else {
+      // Sinon, afficher un message d'erreur
       console.error(xhr.statusText);
     }
-  };
-  // Gérer les erreurs de la requête
-  xhr.onerror = function() {
-    console.error('Une erreur est survenue lors de la requête.');
   };
 }
 
@@ -366,8 +362,9 @@ function sendNewPhoto() {
   // Gérer la réponse de la requête
   xhr.onload = function() {
     if (xhr.status >= 200 && xhr.status < 300) {
-      // Si la requête est réussie, afficher un message de succès
-      console.log(xhr.responseText);
+      // Si la requête est réussie, retourner à la galerie et rafraîchir les projets
+      backToGallery();
+      refreshProjects();
     } else {
       // Sinon, afficher un message d'erreur
       console.error(xhr.statusText);

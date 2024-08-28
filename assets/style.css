@@ -336,6 +336,16 @@ li:hover {
 	border: none;
   }
 
+  #photoAddForm button.enabled {
+	font-family: 'Syne';
+	width: 237px;
+	height: 36px;
+	border-radius: 36px;
+	background-color: #1D6154;
+	color: white;
+	border: none;
+  }
+
   .photo-desc {
 	display: flex;
 	justify-content: space-between;
