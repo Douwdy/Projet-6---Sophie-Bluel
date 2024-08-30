@@ -344,9 +344,14 @@ li:hover {
 	color: #444444;
 }
   
-  .photo-upload input[type="file"] {
+.photo-upload input[type="file"] {
 	display: none;
-  }
+}
+
+.error-border{
+	border: 1px solid crimson !important;
+	animation: wiggle 0.3s;
+}
 
   #photoAddForm{
 	display: flex;
@@ -355,22 +360,12 @@ li:hover {
 	flex-direction: column;
   }
 
-  #photoAddForm button {
+  #submitPhoto {
 	font-family: 'Syne';
 	width: 237px;
 	height: 36px;
 	border-radius: 36px;
 	background-color: #A7A7A7;
-	color: white;
-	border: none;
-  }
-
-  #photoAddForm button.enabled {
-	font-family: 'Syne';
-	width: 237px;
-	height: 36px;
-	border-radius: 36px;
-	background-color: #1D6154;
 	color: white;
 	border: none;
   }

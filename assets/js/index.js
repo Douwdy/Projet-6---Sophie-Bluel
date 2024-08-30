@@ -207,7 +207,7 @@ function addPhotoDisplay() {
   </div>
   <h2>Ajout photo</h2>
 			<form id="photoAddForm">
-			  <div class="photo-upload">
+			  <div class="photo-upload" id="photoField">
 				<i class="fas fa-image"></i>
 				<div>
 					<input type="file" id="photoImport" required>
@@ -288,6 +288,12 @@ photoInput.addEventListener('change', function() {
   document.querySelector('.fa-xmark').addEventListener('click', function() { // Ajoute un eventListener pour la fermeture de la popup
     popup.style.display = "none";
   });
+
+  // Ajoute un eventListener pour chaque champ du formulaire d'ajout de projet
+  const formFields = Array.from(document.querySelectorAll('#photoTitle, #photoCategory, #photoImport'));
+  formFields.forEach(field => {
+    field.addEventListener('change', checkForm);
+  });
 };
 
 // Retourne à la page d'ajout de projet
@@ -353,6 +359,15 @@ function sendNewPhoto() {
   // Vérifier que les données du formulaire sont complètes
   if (!image || !title || !category) {
     console.error('Données du formulaire incomplètes');
+    if (!image) {
+      document.getElementById('photoField').classList.add('error-border');
+    }
+    if (!title) {
+      document.getElementById('photoTitle').classList.add('error-border');
+    }
+    if (!category) {
+      document.getElementById('photoCategory').classList.add('error-border');
+    }
     return;
   }
 
@@ -387,6 +402,18 @@ function sendNewPhoto() {
   xhr.onerror = function() {
     console.error('Une erreur est survenue lors de la requête.');
   };
+}
+
+// Vérifie si tout les champs sont remplis, si oui, change la couleur du bouton valider en vert
+function checkForm() {
+  const title = document.getElementById('photoTitle').value;
+  const category = document.getElementById('photoCategory').value;
+  const photo = document.getElementById('photoImport').files[0];
+  if (title && category && photo) {
+    document.getElementById('submitPhoto').style.backgroundColor = '#1D6154';
+  } else {
+    document.getElementById('submitPhoto').style.backgroundColor = '#ccc';
+  }
 }
 
 // Si le formulaire est soumis, empêche le rechargement de la page et envoie une nouvelle photo
