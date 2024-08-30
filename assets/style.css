@@ -131,9 +131,25 @@ li:hover {
 	width: 404px;
 	margin-bottom: 0.5em;
 }
-#portfolio h2 {
-	text-align: center;
+#portfolio {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+#portfolio .portfolio-title {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 	margin-bottom: 1em;
+}
+#portfolio .portfolio-title p {
+	margin-left: 10px;
+	cursor: pointer;
+}
+#portfolio .portfolio-title h2 {
+	text-align: center;
+	
 }
 .buttons {
 	display: flex;
@@ -236,7 +252,8 @@ li:hover {
 	height: 100vh;
 	background-color: rgba(0, 0, 0, 0.8);
 	justify-content: center;
-	align-items: center
+	align-items: center;
+	flex-direction: column;
 }
 
 #popup > div {
@@ -292,6 +309,18 @@ li:hover {
 	width: 100%;
 }
 
+.popup-editmode{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: absolute;
+	top: 0;
+	width: 100vw !important;
+	border-radius: 0px !important;
+	background-color: black !important;
+	color: white;
+	font-size: 16px;
+}
 
 .photo-upload {
 	height: 110px;

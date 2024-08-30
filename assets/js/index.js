@@ -6,6 +6,8 @@ const popup = document.getElementById('popup'); // Localisation de la popup
 const pageBody = document.querySelector('main'); // Localisation du contenu de la page
 const popupContent = document.getElementById('popupContent'); // Localisation du contenu de la popup
 const token = localStorage.getItem('token'); // Récupération du token depuis le localStorage
+const editBtn = document.getElementById('editBtn'); // Localisation du bouton d'édition
+const loginBtn = document.getElementById('loginForm') // Localisation du bouton de connexion
 
 // Vérification de validité du token
 function checkToken() {
@@ -26,6 +28,8 @@ function checkToken() {
         console.log('Token expiré');
       } else {
         console.log('Token valide');
+        editBtn.style.display = 'unset';
+        loginBtn.textContent = 'logout'; // Change le texte du bouton de connexion en "logout"
       }
   }
 }
@@ -108,8 +112,9 @@ refreshProjects();
         // On retire la classe d'erreur de mot de passe
         document.getElementById('passwordLogin').classList.remove('error-login');
         loginDisplay(); // Retire la page de connexion
-        worksDisplay(); // Affiche la page d'ajout de projet
         localStorage.setItem('token', data.token); // Sauvegarde le token dans le localStorage
+        editBtn.style.display = 'unset'; // Affiche le bouton d'édition
+        loginBtn.textContent = 'logout'; // Change le texte du bouton de connexion en "logout"
     })
     .catch(error => {
       console.error(error);
@@ -136,7 +141,12 @@ function displayProjects(projects) {
 // Fonction pour afficher la page de connexion
 function loginDisplay() {
   if (localStorage.getItem('token')) {
-    worksDisplay();
+    // Supprime le token du localStorage
+    localStorage.removeItem('token');
+    // Cache le bouton d'édition
+    editBtn.style.display = 'none';
+    // Change la valeur du bouton de connexion en "login"
+    loginBtn.textContent = 'login'; // Change le texte du bouton de connexion en "login"
   } else {
     // Sélectionne l'élément de la page de connexion et le corps de la page
     const login = document.getElementById('login');
@@ -192,7 +202,7 @@ function addPhotoDisplay() {
   // Affiche la popup
   popupContent.innerHTML = `
   <div class="popup-header">
-    <i class="fas fa-arrow-left" id="backToGallery"></i>
+    <i class="fas fa-arrow-left" id="backToGallery" style="visibility: visible;"></i>
     <i class="fa-solid fa-xmark" id="closePopup"></i>
   </div>
   <h2>Ajout photo</h2>
@@ -284,7 +294,10 @@ photoInput.addEventListener('change', function() {
 function backToGallery() { 
   // Affiche la page d'ajout de projet
   popupContent.innerHTML = `
-  		<i class="fa-solid fa-xmark"></i>
+  		<div class="popup-header">
+				<i class="fas fa-arrow-left" id="backToGallery" style="visibility: hidden;"></i>
+				<i class="fa-solid fa-xmark" id="closePopup"></i>
+			</div>
 		  <h2>Galerie Photo</h2>
 		  <div id="existingPhotos">
 		  </div>
@@ -370,13 +383,13 @@ function sendNewPhoto() {
       console.error(xhr.statusText);
     }
   };
-
+  // Gérer les erreurs de la requête
   xhr.onerror = function() {
     console.error('Une erreur est survenue lors de la requête.');
   };
 }
 
-// Si l'utilisateur est connecté, affiche la page d'ajout de projet, sinon affiche la page de connexion
+// Si le formulaire est soumis, empêche le rechargement de la page et envoie une nouvelle photo
 document.querySelector('form').addEventListener('submit', function(event) {
   event.preventDefault();
   sendNewPhoto();
@@ -393,10 +406,11 @@ document.querySelector('.fa-xmark').addEventListener('click', function() {
   popup.style.display = "none";
 });
 
-document.getElementById('loginForm').addEventListener('click', loginDisplay); // Ajoute un eventListener pour l'affichage de la page de connexion
+loginBtn.addEventListener('click', loginDisplay); // Ajoute un eventListener pour l'affichage de la page de connexion
 
 document.getElementById('addPhoto').addEventListener('click', addPhotoDisplay); // Ajoute un eventListener pour l'affichage de la page d'ajout de projet
 
+editBtn.addEventListener('click', worksDisplay); // Ajoute un eventListener pour l'affichage de la page d'ajout de projet
 // Ajoute la classe active au bouton cliqué et supprime les autres
 categoryButtons.forEach(button => {
   button.addEventListener('click', () => {

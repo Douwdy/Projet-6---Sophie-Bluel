@@ -35,9 +35,13 @@
 	</form>
   </section>
 <main>
-	<section id="popup" style="display: none;">
+	<section id="popup" style="display: flex;">
+		<div class="popup-editmode"><i class="fas fa-pen-to-square"></i><p>Mode édition</p></div>
 		<div id="popupContent">
-		  <i class="fa-solid fa-xmark"></i>
+		    <div class="popup-header">
+				<i class="fas fa-arrow-left" id="backToGallery" style="visibility: hidden;"></i>
+				<i class="fa-solid fa-xmark" id="closePopup"></i>
+			</div>
 		  <h2>Galerie Photo</h2>
 		  <div id="existingPhotos">
 		  </div>
@@ -57,7 +61,10 @@
 		</article>
 	</section>
 	<section id="portfolio">
-		<h2>Mes Projets</h2>
+		<div class="portfolio-title">
+			<h2>Mes projets</h2>
+			<p style="display: none;" id="editBtn"><i class="fas fa-pen-to-square"></i> modifier</p>
+		</div>
 		<div class="buttons">
 			<button class="active category-button" data-category-id="All">Tous</button>
 			<button class="category-button" data-category-id="Objets">Objets</button>
