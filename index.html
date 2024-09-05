@@ -14,16 +14,18 @@
 	<link rel="stylesheet" href="./assets/style.css">
 </head>
 <body>
+	<div id="editmode" style="display: none;"><i class="fas fa-pen-to-square"></i><p>Mode édition</p></div>
 <header>
-	<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
-	<nav>
-		<a href="#portfolio">projets</a>
-		<a href="#contact">contact</a>
-		<a href="#" id="loginForm">login</a>
-		<a href="#"><img src="./assets/icons/instagram.webp" alt="Instagram"></a>
-	</nav>
+		<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
+		<nav>
+			<a href="#portfolio">projets</a>
+			<a href="#contact">contact</a>
+			<a href="#" id="loginForm">login</a>
+			<a href="#"><img src="./assets/icons/instagram.webp" alt="Instagram"></a>
+		</nav>
+	</div>
 </header>
-<section id="login" class="display-none" style="display: none;">
+<section id="login" style="display: none;">
 	<h2>Login</h2>
 	<form>
 	  <label for="emailLogin">Email</label>
@@ -31,12 +33,11 @@
 	  <label for="passwordLogin">Mot de passe</label>
 	  <input class="form form-outline" type="password" name="password" id="passwordLogin">
 	  <input type="submit" value="Se connecter">
-	  <a href="#">Mot de passe oublié</a>
 	</form>
+	<a href="#">Mot de passe oublié</a>
   </section>
 <main>
 	<section id="popup" style="display: none;">
-		<div class="popup-editmode"><i class="fas fa-pen-to-square"></i><p>Mode édition</p></div>
 		<div id="popupContent">
 		    <div class="popup-header">
 				<i class="fas fa-arrow-left" id="backToGallery" style="visibility: hidden;"></i>

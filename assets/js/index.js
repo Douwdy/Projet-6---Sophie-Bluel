@@ -8,6 +8,8 @@ const popupContent = document.getElementById('popupContent'); // Localisation du
 const token = localStorage.getItem('token'); // Récupération du token depuis le localStorage
 const editBtn = document.getElementById('editBtn'); // Localisation du bouton d'édition
 const loginBtn = document.getElementById('loginForm') // Localisation du bouton de connexion
+const editMode = document.getElementById('editmode'); // Localisation de la bannière de mode édition
+const header = document.querySelector('header'); // Localisation de l'en-tête
 
 // Vérification de validité du token
 function checkToken() {
@@ -20,16 +22,15 @@ function checkToken() {
 
       const decodedToken = JSON.parse(jsonPayload);
       const expiration = decodedToken.exp;
-      console.log('Expiration dans:', Math.round(((((expiration * 1000) - Date.now()) / 1000) / 60) / 60), 'heures');
       // Vérification de la date d'expiration du token
       if (expiration * 1000 < Date.now()) {
         // Si le token est expiré, on le supprime du localStorage
         localStorage.removeItem('token');
-        console.log('Token expiré');
       } else {
-        console.log('Token valide');
         editBtn.style.display = 'unset';
         loginBtn.textContent = 'logout'; // Change le texte du bouton de connexion en "logout"
+        editMode.style.display = 'flex'; // Affiche la bannière de mode édition
+        header.style.marginTop = '100px'; // Ajoute une marge en haut de l'en-tête
       }
   }
 }
@@ -115,6 +116,8 @@ refreshProjects();
         localStorage.setItem('token', data.token); // Sauvegarde le token dans le localStorage
         editBtn.style.display = 'unset'; // Affiche le bouton d'édition
         loginBtn.textContent = 'logout'; // Change le texte du bouton de connexion en "logout"
+        editMode.style.display = 'flex'; // Affiche la bannière de mode édition
+        header.style.marginTop = '100px'; // Ajoute une marge en haut de l'en-tête
     })
     .catch(error => {
       console.error(error);
@@ -147,6 +150,10 @@ function loginDisplay() {
     editBtn.style.display = 'none';
     // Change la valeur du bouton de connexion en "login"
     loginBtn.textContent = 'login'; // Change le texte du bouton de connexion en "login"
+    // Cache la bannière de mode édition
+    editMode.style.display = 'none';
+    // Retire la marge en haut de l'en-tête
+    header.style.marginTop = '';
   } else {
     // Sélectionne l'élément de la page de connexion et le corps de la page
     const login = document.getElementById('login');
@@ -172,12 +179,26 @@ function worksDisplay() {
     .then((data) => {
       // Affiche les projets dans la page d'ajout de projet
       data.forEach((element) => {
-        existingPhotos.innerHTML += `
-        <article class="photo" id="${element.id}">
-          <img src="${element.imageUrl}" alt="${element.title}">
-          <button class="photo-delete" data-id="${element.id}"><i class="fa-solid fa-trash-can"></i></button>
-        </article>
-        `;
+        const article = document.createElement('article');
+        article.classList.add('photo');
+        article.id = element.id;
+
+        const img = document.createElement('img');
+        img.src = element.imageUrl;
+        img.alt = element.title;
+
+        const button = document.createElement('button');
+        button.classList.add('photo-delete');
+        button.dataset.id = element.id;
+
+        const icon = document.createElement('i');
+        icon.classList.add('fa-solid', 'fa-trash-can');
+
+        button.appendChild(icon);
+        article.appendChild(img);
+        article.appendChild(button);
+
+        existingPhotos.appendChild(article);
       });
   // EventListener pour la suppression de la photo
   const deleteButtons = existingPhotos.querySelectorAll('.photo-delete'); // Localisation des boutons de suppression
@@ -322,28 +343,29 @@ function backToGallery() {
 
 // Supprime la photo du projet
 function deletePhoto(id) {
-  // Créer une nouvelle requête XHR
-  const xhr = new XMLHttpRequest();
-
-  // Configurer la requête
-  xhr.open('DELETE', `${apiLink}/works/${id}`, true);
-  xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-  // Envoyer la requête
-  xhr.send();
-
-  xhr.onload = function() {
-    if (xhr.status >= 200 && xhr.status < 300) {
+  // Envoie une requête fetch de type DELETE pour supprimer la photo
+  fetch(`${apiLink}/works/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  .then(response => {
+    if (response.ok) {
       // Si la requête est réussie, rafraîchir la galerie
       refreshProjects();
     } else {
       // Sinon, afficher un message d'erreur
-      console.error(xhr.statusText);
+      console.error(`HTTP error! status: ${response.status}`);
     }
-  };
+  })
+  .catch(error => {
+    console.error(error);
+  });
 }
 
 // Fonction pour envoyer une nouvelle photo au serveur
-function sendNewPhoto() {
+async function sendNewPhoto() {
   // Récupérer le token depuis le localStorage
   const token = localStorage.getItem('token');
   if (!token) {
@@ -355,6 +377,9 @@ function sendNewPhoto() {
   const image = document.getElementById('photoImport').files[0];
   const title = document.getElementById('photoTitle').value;
   const category = document.getElementById('photoCategory').value;
+
+  // Formater le titre pour prévenir les attaques par injection SQL et XSS
+  const titleFormatted = title.replace(/</g, "").replace(/>/g, "").replace(/&/g, "").replace(/"/g, "").replace(/'/g, "").replace(/\//g, "");
 
   // Vérifier que les données du formulaire sont complètes
   if (!image || !title || !category) {
@@ -374,34 +399,30 @@ function sendNewPhoto() {
   // Utiliser FormData pour envoyer l'image
   const formData = new FormData();
   formData.append('image', image, image.name);
-  formData.append('title', title);
+  formData.append('title', titleFormatted);
   formData.append('category', category);
 
-  // Créer la requête XHR
-  const xhr = new XMLHttpRequest();
+  try {
+    // Envoyer la requête avec fetch
+    const response = await fetch(`${apiLink}/works`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
+    });
 
-  // Configurer la requête
-  xhr.open('POST', `${apiLink}/works`, true);
-  xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-
-  // Envoyer la requête avec FormData en tant que corps
-  xhr.send(formData);
-
-  // Gérer la réponse de la requête
-  xhr.onload = function() {
-    if (xhr.status >= 200 && xhr.status < 300) {
+    if (response.ok) {
       // Si la requête est réussie, retourner à la galerie et rafraîchir les projets
       backToGallery();
       refreshProjects();
     } else {
       // Sinon, afficher un message d'erreur
-      console.error(xhr.statusText);
+      console.error(`HTTP error! status: ${response.status}`);
     }
-  };
-  // Gérer les erreurs de la requête
-  xhr.onerror = function() {
-    console.error('Une erreur est survenue lors de la requête.');
-  };
+  } catch (error) {
+    console.error('Une erreur est survenue lors de la requête.', error);
+  }
 }
 
 // Vérifie si tout les champs sont remplis, si oui, change la couleur du bouton valider en vert
