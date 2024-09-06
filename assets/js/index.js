@@ -11,15 +11,14 @@ const loginBtn = document.getElementById('loginForm') // Localisation du bouton 
 const editMode = document.getElementById('editmode'); // Localisation de la bannière de mode édition
 const header = document.querySelector('header'); // Localisation de l'en-tête
 
+
 // Vérification de validité du token
 function checkToken() {
   if (token) {
-    // décodage du token
     // Décode le token et extrait la propriété "exp"
       const base64Url = token.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
       const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-
       const decodedToken = JSON.parse(jsonPayload);
       const expiration = decodedToken.exp;
       // Vérification de la date d'expiration du token
@@ -27,13 +26,17 @@ function checkToken() {
         // Si le token est expiré, on le supprime du localStorage
         localStorage.removeItem('token');
       } else {
+        // Si le token est valide, on affiche le bouton d'édition
         editBtn.style.display = 'unset';
-        loginBtn.textContent = 'logout'; // Change le texte du bouton de connexion en "logout"
-        editMode.style.display = 'flex'; // Affiche la bannière de mode édition
-        header.style.marginTop = '100px'; // Ajoute une marge en haut de l'en-tête
-      }
-  }
-}
+        // Change le texte du bouton de connexion en "logout"
+        loginBtn.textContent = 'logout';
+        // Affiche la bannière de mode édition
+        editMode.style.display = 'flex';
+        // Ajoute une marge en haut de l'en-tête
+        header.style.marginTop = '100px';
+      };
+  };
+};
 
 checkToken();
 
@@ -48,24 +51,30 @@ function refreshProjects() {
     const allProjects = [];
     // Grouper les projets par catégorie
     for (const project of data) {
+      // Récupérer le nom de la catégorie du projet
       const categoryName = project.category.name;
+      // Si la catégorie n'existe pas dans l'objet, on la crée
       if (!projectsByCategory[categoryName]) {
         projectsByCategory[categoryName] = [];
       }
+      // Ajouter le projet à la catégorie correspondante
       projectsByCategory[categoryName].push(project);
+      // Ajouter le projet à la liste de tous les projets
       allProjects.push(project);
     }
 
     // Afficher les projets par catégorie
     categoryButtons.forEach((button) => {
+      // Ajouter un eventListener pour chaque bouton de catégorie
       button.addEventListener("click", () => {
+        // Récupérer l'ID de la catégorie du bouton
         const categoryId = button.dataset.categoryId;
+        // Créer un tableau pour stocker les projets à afficher
         let projects;
+        // Si la catégorie est "All", afficher tous les projets, sinon, afficher les projets de la catégorie
         if (categoryId === "All") {
-          // Si la catégorie est "Tous", afficher tous les projets
           projects = allProjects;
         } else {
-          // Sinon, grouper les projets par catégorie
           projects = projectsByCategory[categoryId] || [];
         }
         displayProjects(projects);
@@ -74,8 +83,7 @@ function refreshProjects() {
 
     displayProjects(allProjects);
   });
-}
-
+};
 refreshProjects();
 
   // Fonction pour gérer la connexion d'un utilisateur
@@ -102,7 +110,7 @@ refreshProjects();
         document.getElementById('passwordLogin').value = '';
         document.getElementById('passwordLogin').classList.add('error-login');
         throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      };
       // Si la réponse est OK, on récupère les données de la réponse
       return response.json();
     })
@@ -112,12 +120,20 @@ refreshProjects();
         document.getElementById('passwordLogin').value = '';
         // On retire la classe d'erreur de mot de passe
         document.getElementById('passwordLogin').classList.remove('error-login');
-        loginDisplay(); // Retire la page de connexion
-        localStorage.setItem('token', data.token); // Sauvegarde le token dans le localStorage
-        editBtn.style.display = 'unset'; // Affiche le bouton d'édition
-        loginBtn.textContent = 'logout'; // Change le texte du bouton de connexion en "logout"
-        editMode.style.display = 'flex'; // Affiche la bannière de mode édition
-        header.style.marginTop = '100px'; // Ajoute une marge en haut de l'en-tête
+        // Retire la page de connexion
+        loginDisplay();
+        // Sauvegarde le token dans le localStorage
+        localStorage.setItem('token', data.token);
+        // Affiche le bouton d'édition
+        editBtn.style.display = 'unset';
+        // Change le texte du bouton de connexion en "logout"
+        loginBtn.textContent = 'logout';
+        // Retire le style gras du bouton de connexion
+        loginBtn.style.fontWeight = '';
+        // Affiche la bannière de mode édition
+        editMode.style.display = 'flex';
+        // Ajoute une marge en haut de l'en-tête
+        header.style.marginTop = '100px';
     })
     .catch(error => {
       console.error(error);
@@ -139,7 +155,7 @@ function displayProjects(projects) {
     `;
     galleryLoc.appendChild(projectElement);
   });
-}
+};
 
 // Fonction pour afficher la page de connexion
 function loginDisplay() {
@@ -148,8 +164,10 @@ function loginDisplay() {
     localStorage.removeItem('token');
     // Cache le bouton d'édition
     editBtn.style.display = 'none';
-    // Change la valeur du bouton de connexion en "login"
-    loginBtn.textContent = 'login'; // Change le texte du bouton de connexion en "login"
+    // Change le texte du bouton de connexion en "login"
+    loginBtn.textContent = 'login';
+    // Retire le style gras du bouton de connexion
+    loginBtn.style.fontWeight = '';
     // Cache la bannière de mode édition
     editMode.style.display = 'none';
     // Retire la marge en haut de l'en-tête
@@ -157,103 +175,171 @@ function loginDisplay() {
   } else {
     // Sélectionne l'élément de la page de connexion et le corps de la page
     const login = document.getElementById('login');
-
+    
     // Ajoute ou supprime la classe "reverted" de l'élément de la page de connexion
     login.classList.toggle('reverted');
-
+    loginBtn.classList.toggle('bold');
     // Définit les styles de l'élément de la page de connexion et du corps de la page en fonction de la présence de la classe "reverted"
     login.style.cssText = login.classList.contains('reverted') ? 'display: flex; overflow: hidden;' : 'display: none;';
     pageBody.style.cssText = login.classList.contains('reverted') ? 'display: none; overflow: hidden;' : 'display: unset; overflow: auto;';
-  }
-}
+  };
+};
 
 // Affiche la popup pour ajouter un nouveau projet
 function worksDisplay() {
   // Affiche la popup
   popup.style.display = "flex";
   const existingPhotos = document.getElementById('existingPhotos');
-  existingPhotos.innerHTML = '';
-  // Fetch les projets de la base de données
-  fetch(`${apiLink}/works`)
-    .then((response) => response.json())
-    .then((data) => {
-      // Affiche les projets dans la page d'ajout de projet
-      data.forEach((element) => {
-        const article = document.createElement('article');
-        article.classList.add('photo');
-        article.id = element.id;
+  if (existingPhotos) {
+    existingPhotos.innerHTML = '';
+    // Fetch les projets de la base de données
+    fetch(`${apiLink}/works`)
+      .then((response) => response.json())
+      .then((data) => {
+        // Affiche les projets dans la page d'ajout de projet
+        data.forEach((element) => {
+          const article = document.createElement('article');
+          article.classList.add('photo');
+          article.id = element.id;
 
-        const img = document.createElement('img');
-        img.src = element.imageUrl;
-        img.alt = element.title;
+          const img = document.createElement('img');
+          img.src = element.imageUrl;
+          img.alt = element.title;
 
-        const button = document.createElement('button');
-        button.classList.add('photo-delete');
-        button.dataset.id = element.id;
+          const button = document.createElement('button');
+          button.classList.add('photo-delete');
+          button.dataset.id = element.id;
 
-        const icon = document.createElement('i');
-        icon.classList.add('fa-solid', 'fa-trash-can');
+          const icon = document.createElement('i');
+          icon.classList.add('fa-solid', 'fa-trash-can');
 
-        button.appendChild(icon);
-        article.appendChild(img);
-        article.appendChild(button);
+          button.appendChild(icon);
+          article.appendChild(img);
+          article.appendChild(button);
 
-        existingPhotos.appendChild(article);
+          existingPhotos.appendChild(article);
+        });
+        // EventListener pour la suppression de la photo
+        const deleteButtons = existingPhotos.querySelectorAll('.photo-delete'); // Localisation des boutons de suppression
+        // Ajoute un eventListener pour chaque bouton de suppression
+        deleteButtons.forEach(button => {
+          button.addEventListener('click', () => {
+            // Récupère l'ID de la photo à supprimer
+            const id = button.dataset.id;
+            // Appel de la fonction pour supprimer la photo avec l'ID correspondant
+            deletePhoto(id);
+            // Retire la photo de la galerie
+            document.getElementById(id).remove();
+            // Rafraîchit la galerie
+            refreshProjects();
+          });
+        });
       });
-  // EventListener pour la suppression de la photo
-  const deleteButtons = existingPhotos.querySelectorAll('.photo-delete'); // Localisation des boutons de suppression
-  // Ajoute un eventListener pour chaque bouton de suppression
-  deleteButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      // Récupère l'ID de la photo à supprimer
-      const id = button.dataset.id;
-      // Appel de la fonction pour supprimer la photo avec l'ID correspondant
-      deletePhoto(id);
-      // Retire la photo de la galerie
-      document.getElementById(id).remove();
-      // Rafraîchit la galerie
-      refreshProjects();
-    });
-  });
-    });
+  };
 };
-
 // Ajoute une photo au projet
 function addPhotoDisplay() {
   // Affiche la popup
-  popupContent.innerHTML = `
-  <div class="popup-header">
-    <i class="fas fa-arrow-left" id="backToGallery" style="visibility: visible;"></i>
-    <i class="fa-solid fa-xmark" id="closePopup"></i>
-  </div>
-  <h2>Ajout photo</h2>
-			<form id="photoAddForm">
-			  <div class="photo-upload" id="photoField">
-				<i class="fas fa-image"></i>
-				<div>
-					<input type="file" id="photoImport" required>
-					<label for="photoImport" class="upload-button">+ Ajouter photo</label>
-				</div>
-				<p>jpg, png: 4mo max</p>
-			  </div>
-			  <div class="photo-desc">
-				<label for="photoTitle">Titre</label>
-				<input type="text" id="photoTitle" required>
-				<label for="photoCategory">Catégorie</label>
-				<select id="photoCategory" required>
-          <option value=""></option>
-				</select>
-			  </div>
-        <div class="line"></div>
-			  <button type="submit" id="submitPhoto">Valider</button>
-			</form>
-  `;
+  const popupHeader = document.createElement('div');
+  popupHeader.classList.add('popup-header');
+  // Crée les icônes pour le bouton Retour et la fermeture de la popup
+  const backToGalleryIcon = document.createElement('i');
+  backToGalleryIcon.classList.add('fas', 'fa-arrow-left');
+  backToGalleryIcon.id = 'backToGallery';
+  backToGalleryIcon.style.visibility = 'visible';
+
+  const closePopupIcon = document.createElement('i');
+  closePopupIcon.classList.add('fa-solid', 'fa-xmark');
+  closePopupIcon.id = 'closePopup';
+  // Ajoute les icônes au header de la popup
+  popupHeader.appendChild(backToGalleryIcon);
+  popupHeader.appendChild(closePopupIcon);
+  // Crée le titre de la popup
+  const popupTitle = document.createElement('h2');
+  popupTitle.textContent = 'Ajout photo';
+  // Crée le formulaire d'ajout de photo
+  const photoAddForm = document.createElement('form');
+  photoAddForm.id = 'photoAddForm';
+  // Crée les champs pour l'importation de la photo, le titre et la catégorie
+  const photoSend = document.createElement('div');
+  photoSend.classList.add('photo-upload');
+  photoSend.id = 'photoField';
+  // Crée l'icône pour l'importation de la photo
+  const uploadIcon = document.createElement('i');
+  uploadIcon.classList.add('fas', 'fa-image');
+  // Crée le champ d'importation de la photo
+  const uploadDiv = document.createElement('div');
+  // Crée l'input pour l'importation de la photo
+  const photoImportInput = document.createElement('input');
+  photoImportInput.type = 'file';
+  photoImportInput.id = 'photoImport';
+  photoImportInput.required = true;
+  // Crée le label pour l'input d'importation de la photo
+  const uploadLabel = document.createElement('label');
+  uploadLabel.htmlFor = 'photoImport';
+  uploadLabel.classList.add('upload-button');
+  uploadLabel.textContent = '+ Ajouter photo';
+  // Crée le champ pour le titre et la catégorie de la photo
+  const photoDesc = document.createElement('div');
+  photoDesc.classList.add('photo-desc');
+  // Crée le label et l'input pour le titre de la photo
+  const titleLabel = document.createElement('label');
+  titleLabel.htmlFor = 'photoTitle';
+  titleLabel.textContent = 'Titre';
+  // Crée l'input pour le titre de la photo
+  const titleInput = document.createElement('input');
+  titleInput.type = 'text';
+  titleInput.id = 'photoTitle';
+  titleInput.required = true;
+  // Crée le label et le select pour la catégorie de la photo
+  const categoryLabel = document.createElement('label');
+  categoryLabel.htmlFor = 'photoCategory';
+  categoryLabel.textContent = 'Catégorie';
+  // Crée le select pour la catégorie de la photo
+  const categorySelect = document.createElement('select');
+  categorySelect.id = 'photoCategory';
+  categorySelect.required = true;
+  // Crée la ligne de séparation entre les champs
+  const lineDiv = document.createElement('div');
+  lineDiv.classList.add('line');
+  // Crée le bouton de validation du formulaire
+  const submitButton = document.createElement('button');
+  submitButton.type = 'submit';
+  submitButton.id = 'submitPhoto';
+  submitButton.textContent = 'Valider';
+  // Ajoute les éléments au formulaire
+  photoSend.appendChild(uploadIcon);
+  uploadDiv.appendChild(photoImportInput);
+  uploadDiv.appendChild(uploadLabel);
+  photoSend.appendChild(uploadDiv);
+  photoSend.innerHTML += '<p>jpg, png: 4mo max</p>';
+  // Ajoute les éléments au formulaire
+  photoDesc.appendChild(titleLabel);
+  photoDesc.appendChild(titleInput);
+  photoDesc.appendChild(categoryLabel);
+  photoDesc.appendChild(categorySelect);
+  // Ajoute les éléments à la popup
+  photoAddForm.appendChild(photoSend);
+  photoAddForm.appendChild(photoDesc);
+  photoAddForm.appendChild(lineDiv);
+  photoAddForm.appendChild(submitButton);
+  // Ajoute les éléments à la popup
+  const popupContent = document.getElementById('popupContent');
+  popupContent.innerHTML = '';
+  popupContent.appendChild(popupHeader);
+  popupContent.appendChild(popupTitle);
+  popupContent.appendChild(photoAddForm);
     // Récupère les catégories de projets
     fetch(`${apiLink}/categories`)
     .then((response) => response.json())
     .then((data) => {
       // Affiche les catégories dans le formulaire
       const select = document.getElementById('photoCategory');
+      // Ajoute une option vide au début du select
+      const blankOption = document.createElement('option');
+      blankOption.value = '';
+      blankOption.textContent = '';
+      select.insertBefore(blankOption, select.firstChild);
       // Pour chaque catégorie, crée une option dans le select
       data.forEach((category) => {
         const option = document.createElement('option');
@@ -263,13 +349,12 @@ function addPhotoDisplay() {
         option.textContent = category.name;
         // Insère l'option dans le select
         select.appendChild(option);
-      })
+      });
     });
 // Localisation de l'input d'importation de la photo
 const photoInput = document.getElementById('photoImport');
 // Localisation du champ d'affichage de la photo
 const photoUpload = document.querySelector('.photo-upload');
-
 // Ajoute un eventListener pour l'importation de la photo
 photoInput.addEventListener('change', function() {
   // Récupère le fichier sélectionné
@@ -287,7 +372,6 @@ photoInput.addEventListener('change', function() {
       image.src = imageData;
       image.alt = 'Photo importée';
       image.style.height = '100%';
-
       // Vide le champ d'affichage de la photo et l'affiche
       photoUpload.innerHTML = '';
       photoUpload.appendChild(image);
@@ -300,13 +384,18 @@ photoInput.addEventListener('change', function() {
     photoUpload.innerHTML = '';
   }
 });
-
+  // Ajoute un eventListener pour l'envoi de la photo
   document.getElementById('submitPhoto').addEventListener('click', function(event) {
+    // Empêche le rechargement de la page
     event.preventDefault();
+    // Envoie la photo
     sendNewPhoto();
-  }); // Ajoute un eventListener pour l'envoi de la photo
-  document.getElementById('backToGallery').addEventListener('click', backToGallery); // Ajoute un eventListener pour le bouton Retour
-  document.querySelector('.fa-xmark').addEventListener('click', function() { // Ajoute un eventListener pour la fermeture de la popup
+  });
+  // Ajoute un eventListener pour le bouton Retour
+  document.getElementById('backToGallery').addEventListener('click', backToGallery);
+  // Ajoute un eventListener pour la fermeture de la popup
+  document.querySelector('.fa-xmark').addEventListener('click', function() {
+    // Ferme la popup
     popup.style.display = "none";
   });
 
@@ -320,17 +409,40 @@ photoInput.addEventListener('change', function() {
 // Retourne à la page d'ajout de projet
 function backToGallery() { 
   // Affiche la page d'ajout de projet
-  popupContent.innerHTML = `
-  		<div class="popup-header">
-				<i class="fas fa-arrow-left" id="backToGallery" style="visibility: hidden;"></i>
-				<i class="fa-solid fa-xmark" id="closePopup"></i>
-			</div>
-		  <h2>Galerie Photo</h2>
-		  <div id="existingPhotos">
-		  </div>
-		  <div class="line"></div>
-		  <button id="addPhoto">Ajouter une photo</button>
-  `;
+  const popupHeader = document.createElement('div');
+  popupHeader.classList.add('popup-header');
+  // Crée les icônes pour le bouton Retour et la fermeture de la popup
+  const backToGalleryIcon = document.createElement('i');
+  backToGalleryIcon.classList.add('fas', 'fa-arrow-left');
+  backToGalleryIcon.id = 'backToGallery';
+  backToGalleryIcon.style.visibility = 'hidden';
+  // Crée l'icône pour la fermeture de la popup
+  const closePopupIcon = document.createElement('i');
+  closePopupIcon.classList.add('fa-solid', 'fa-xmark');
+  closePopupIcon.id = 'closePopup';
+  // Ajoute les icônes au header de la popup
+  popupHeader.appendChild(backToGalleryIcon);
+  popupHeader.appendChild(closePopupIcon);
+  // Crée le titre de la popup
+  const popupTitle = document.createElement('h2');
+  popupTitle.textContent = 'Galerie Photo';
+  // Crée la liste des projets existants
+  const existingPhotos = document.createElement('div');
+  existingPhotos.id = 'existingPhotos';
+  // Crée la ligne de séparation entre les projets existants et le bouton d'ajout de photo
+  const lineDiv = document.createElement('div');
+  lineDiv.classList.add('line');
+  // Crée le bouton d'ajout de photo
+  const addPhotoButton = document.createElement('button');
+  addPhotoButton.id = 'addPhoto';
+  addPhotoButton.textContent = 'Ajouter une photo';
+  // Ajoute les éléments à la popup
+  popupContent.innerHTML = '';
+  popupContent.appendChild(popupHeader);
+  popupContent.appendChild(popupTitle);
+  popupContent.appendChild(existingPhotos);
+  popupContent.appendChild(lineDiv);
+  popupContent.appendChild(addPhotoButton);
   // Affiche la liste des projets
   worksDisplay();
   // Ajoute un eventListener pour la fermeture de la popup
@@ -339,7 +451,7 @@ function backToGallery() {
   });
   // Ajoute un eventListener pour l'ajout d'un nouveau projet
   document.getElementById('addPhoto').addEventListener('click', addPhotoDisplay);
-}
+};
 
 // Supprime la photo du projet
 function deletePhoto(id) {
@@ -362,16 +474,16 @@ function deletePhoto(id) {
   .catch(error => {
     console.error(error);
   });
-}
+};
 
 // Fonction pour envoyer une nouvelle photo au serveur
 async function sendNewPhoto() {
-  // Récupérer le token depuis le localStorage
+  // Récupérer le token depuis le localStorage et vérifier s'il est présent sinon afficher un message d'erreur
   const token = localStorage.getItem('token');
   if (!token) {
     console.error('Token introuvable');
     return;
-  }
+  };
 
   // Récupérer les données du formulaire (image, titre et catégorie)
   const image = document.getElementById('photoImport').files[0];
@@ -381,7 +493,7 @@ async function sendNewPhoto() {
   // Formater le titre pour prévenir les attaques par injection SQL et XSS
   const titleFormatted = title.replace(/</g, "").replace(/>/g, "").replace(/&/g, "").replace(/"/g, "").replace(/'/g, "").replace(/\//g, "");
 
-  // Vérifier que les données du formulaire sont complètes
+  // Vérifier que les données du formulaire sont complètes sinon ajoute une bordure rouge aux champs manquants
   if (!image || !title || !category) {
     console.error('Données du formulaire incomplètes');
     if (!image) {
@@ -394,9 +506,9 @@ async function sendNewPhoto() {
       document.getElementById('photoCategory').classList.add('error-border');
     }
     return;
-  }
+  };
 
-  // Utiliser FormData pour envoyer l'image
+  // FormData pour envoyer l'image et les données du formulaire
   const formData = new FormData();
   formData.append('image', image, image.name);
   formData.append('title', titleFormatted);
@@ -423,7 +535,7 @@ async function sendNewPhoto() {
   } catch (error) {
     console.error('Une erreur est survenue lors de la requête.', error);
   }
-}
+};
 
 // Vérifie si tout les champs sont remplis, si oui, change la couleur du bouton valider en vert
 function checkForm() {
@@ -435,7 +547,7 @@ function checkForm() {
   } else {
     document.getElementById('submitPhoto').style.backgroundColor = '#ccc';
   }
-}
+};
 
 // Si le formulaire est soumis, empêche le rechargement de la page et envoie une nouvelle photo
 document.querySelector('form').addEventListener('submit', function(event) {

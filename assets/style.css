@@ -1,8 +1,3 @@
-/* http://meyerweb.com/eric/tools/css/reset/
-   v2.0 | 20110126
-   License: none (public domain)
-*/
-
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -23,42 +18,55 @@ time, mark, audio, video {
 	vertical-align: baseline;
 	scroll-behavior: smooth;
 }
-/* HTML5 display-role reset for older browsers */
+
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
 	display: block;
 }
+
 body {
 	line-height: 1;
 	background-color: #FFFEF8;
 }
+
+main{
+	max-width: 1140px;
+	margin: 50px auto 0px auto;
+}
+
 ol, ul {
 	list-style: none;
 }
+
 blockquote, q {
 	quotes: none;
 }
+
 blockquote:before, blockquote:after,
 q:before, q:after {
 	content: '';
 	content: none;
 }
+
 table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
-/** end reset css**/
+
+
 body {
-	max-width: 1140px;
-	margin:auto;
 	font-family: 'Work Sans' ;
 	font-size: 14px;
 }
+
 header {
 	display: flex;
 	justify-content: space-between;
-	margin: 50px 0px;
+	align-items: center;
+	margin: 50px auto 0px auto;
+	max-width: 1140px;
 }
+
 section {
 	margin: 50px 0
 }
@@ -76,7 +84,6 @@ h1 > span {
 	font-family: 'Work Sans';
 	font-size:10px;
 	letter-spacing: 0.1em;
-;
 }
 
 h2{
@@ -85,6 +92,7 @@ h2{
 	font-size: 30px;
 	color: #1D6154
 }
+
 nav {
 	display: flex;
 	align-items: center;
@@ -92,6 +100,7 @@ nav {
 	list-style-type: none;
 	width: 30%;
 }
+
 nav a {
 	padding: 0 10px;
 	font-size: 1.2em;
@@ -108,13 +117,18 @@ nav img{
 li:hover {
 	color: #B1663C;
 }
+
 #introduction {
 	display: flex;
 	align-items: center;
+	margin-top: 150px;
+	margin-bottom: 150px;
 }
+
 #introduction figure {
 	flex: 1
 }
+
 #introduction img {
 	display: block;
 	margin: auto;
@@ -124,13 +138,16 @@ li:hover {
 #introduction article {
 	flex: 1
 }
+
 #introduction h2 {
 	margin-bottom: 1em;
 }
+
 #introduction p {
 	width: 404px;
 	margin-bottom: 0.5em;
 }
+
 #portfolio {
 	display: flex;
 	flex-direction: column;
@@ -143,20 +160,24 @@ li:hover {
 	justify-content: space-between;
 	margin-bottom: 1em;
 }
+
 #portfolio .portfolio-title p {
 	margin-left: 10px;
 	cursor: pointer;
 }
+
 #portfolio .portfolio-title h2 {
 	text-align: center;
 	
 }
+
 .buttons {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	width: 100%;
 }
+
 .buttons button {
 	background-color: #FFFFFF;
 	border: 1px solid #1D6154;
@@ -171,14 +192,21 @@ li:hover {
 	margin: 20px 5px 50px 5px;
 	cursor: pointer;
 }
+
 .buttons button:hover {
 	color: white;
 	background-color: #1D6154;
 }
+
 .active{
 	color: white !important;
 	background-color: #1D6154 !important;
 }
+
+.bold{
+	font-weight: bold;
+}
+
 .gallery {
 	width: 100%;
 	display: grid;
@@ -524,10 +552,15 @@ footer {
 	align-items: center;
 	background-color: white;
 	height: 60px;
-	padding: 0.5em;
+	width: 100%;
+}
+footer nav{
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
-footer nav ul {
+footer nav a {
 	font-size: 14px;
 	margin: 2em
 }
