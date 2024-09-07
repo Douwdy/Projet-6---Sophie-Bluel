@@ -146,13 +146,22 @@ function displayProjects(projects) {
   galleryLoc.innerHTML = "";
   // Pour chaque projet, crée un élément HTML
   projects.forEach((project) => {
+    // Crée un élément div pour le projet
     const projectElement = document.createElement("div");
-    projectElement.innerHTML += `
-      <figure id="${project.id}">
-        <img src="${project.imageUrl}" alt="${project.title}">
-        <figcaption>${project.title}</figcaption>
-      </figure>
-    `;
+    const projectFigure = document.createElement("figure");
+    projectFigure.id = project.id;
+    // Crée un élément figure pour le projet
+    const projectImage = document.createElement("img");
+    projectImage.src = project.imageUrl;
+    projectImage.alt = project.title;
+    // Crée un élément figcaption pour le projet
+    const projectCaption = document.createElement("figcaption");
+    projectCaption.textContent = project.title;
+    // Ajoute les éléments au projet
+    projectFigure.appendChild(projectImage);
+    projectFigure.appendChild(projectCaption);
+    // Ajoute le projet à la galerie
+    projectElement.appendChild(projectFigure);
     galleryLoc.appendChild(projectElement);
   });
 };
@@ -175,13 +184,12 @@ function loginDisplay() {
   } else {
     // Sélectionne l'élément de la page de connexion et le corps de la page
     const login = document.getElementById('login');
-    
     // Ajoute ou supprime la classe "reverted" de l'élément de la page de connexion
     login.classList.toggle('reverted');
     loginBtn.classList.toggle('bold');
     // Définit les styles de l'élément de la page de connexion et du corps de la page en fonction de la présence de la classe "reverted"
-    login.style.cssText = login.classList.contains('reverted') ? 'display: flex; overflow: hidden;' : 'display: none;';
-    pageBody.style.cssText = login.classList.contains('reverted') ? 'display: none; overflow: hidden;' : 'display: unset; overflow: auto;';
+    login.style.cssText = login.classList.contains('reverted') ? '' : 'display: none;';
+    pageBody.style.cssText = login.classList.contains('reverted') ? 'display: none;' : '';
   };
 };
 
@@ -201,22 +209,22 @@ function worksDisplay() {
           const article = document.createElement('article');
           article.classList.add('photo');
           article.id = element.id;
-
+          // Crée une balise img pour afficher la photo
           const img = document.createElement('img');
           img.src = element.imageUrl;
           img.alt = element.title;
-
+          // Crée un bouton pour supprimer la photo
           const button = document.createElement('button');
           button.classList.add('photo-delete');
           button.dataset.id = element.id;
-
+          // Crée une icône pour le bouton de suppression
           const icon = document.createElement('i');
           icon.classList.add('fa-solid', 'fa-trash-can');
-
+          // Ajoute l'icône au bouton
           button.appendChild(icon);
           article.appendChild(img);
           article.appendChild(button);
-
+          // Ajoute l'article à la liste des projets existants
           existingPhotos.appendChild(article);
         });
         // EventListener pour la suppression de la photo
@@ -372,6 +380,8 @@ photoInput.addEventListener('change', function() {
       image.src = imageData;
       image.alt = 'Photo importée';
       image.style.height = '100%';
+      photoUpload.style.padding = '0';
+      photoUpload.style.height = '170px';
       // Vide le champ d'affichage de la photo et l'affiche
       photoUpload.innerHTML = '';
       photoUpload.appendChild(image);
@@ -542,11 +552,7 @@ function checkForm() {
   const title = document.getElementById('photoTitle').value;
   const category = document.getElementById('photoCategory').value;
   const photo = document.getElementById('photoImport').files[0];
-  if (title && category && photo) {
-    document.getElementById('submitPhoto').style.backgroundColor = '#1D6154';
-  } else {
-    document.getElementById('submitPhoto').style.backgroundColor = '#ccc';
-  }
+  document.getElementById('submitPhoto').style.backgroundColor = (title && category && photo) ? '#1D6154' : '#ccc';
 };
 
 // Si le formulaire est soumis, empêche le rechargement de la page et envoie une nouvelle photo
