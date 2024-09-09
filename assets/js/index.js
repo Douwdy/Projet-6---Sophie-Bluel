@@ -128,7 +128,12 @@ refreshProjects();
         // Ajoute un p pour afficher un message d'erreur
         const errorMessage = document.createElement('p');
         errorMessage.textContent = 'Erreur dans l’identifiant ou le mot de passe';
+        errorMessage.id = 'errorMessage';
         errorMessage.style.color = 'red';
+        // prevent the message from being added multiple times
+        if (document.getElementById('errorMessage')) {
+          document.getElementById('errorMessage').remove();
+        };
         // Ajoute le message d'erreur au formulaire de connexion
         loginForm.appendChild(errorMessage);
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -142,6 +147,8 @@ refreshProjects();
         document.getElementById('passwordLogin').value = '';
         // On retire la classe d'erreur de mot de passe
         document.getElementById('passwordLogin').classList.remove('error-login');
+        // On retire le message d'erreur
+        document.getElementById('errorMessage').remove();
         // Retire la page de connexion
         loginDisplay();
         // Sauvegarde le token dans le localStorage
