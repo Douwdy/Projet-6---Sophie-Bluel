@@ -146,9 +146,15 @@ refreshProjects();
         document.getElementById('emailLogin').value = '';
         document.getElementById('passwordLogin').value = '';
         // On retire la classe d'erreur de mot de passe
-        document.getElementById('passwordLogin').classList.remove('error-login');
+        const passwordLogin = document.getElementById('passwordLogin');
+        if (passwordLogin.classList.contains('error-login')) {
+          passwordLogin.classList.remove('error-login');
+        }
         // On retire le message d'erreur
-        document.getElementById('errorMessage').remove();
+        const errorMessage = document.getElementById('errorMessage');
+        if (errorMessage) {
+          errorMessage.remove();
+        }
         // Retire la page de connexion
         loginDisplay();
         // Sauvegarde le token dans le localStorage
