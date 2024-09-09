@@ -123,6 +123,14 @@ refreshProjects();
         // Si la réponse n'est pas OK, on gère l'erreur et on l'indique à l'utilisateur
         document.getElementById('passwordLogin').value = '';
         document.getElementById('passwordLogin').classList.add('error-login');
+        // Selectionne le formulaire de connexion
+        const loginForm = document.getElementById('login').querySelector('form');
+        // Ajoute un p pour afficher un message d'erreur
+        const errorMessage = document.createElement('p');
+        errorMessage.textContent = 'Erreur dans l’identifiant ou le mot de passe';
+        errorMessage.style.color = 'red';
+        // Ajoute le message d'erreur au formulaire de connexion
+        loginForm.appendChild(errorMessage);
         throw new Error(`HTTP error! status: ${response.status}`);
       };
       // Si la réponse est OK, on récupère les données de la réponse
