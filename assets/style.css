@@ -171,14 +171,14 @@ li:hover {
 	
 }
 
-.buttons {
+.filters {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	width: 100%;
 }
 
-.buttons button {
+.filters button {
 	background-color: #FFFFFF;
 	border: 1px solid #1D6154;
 	height: 37px;
@@ -193,7 +193,7 @@ li:hover {
 	cursor: pointer;
 }
 
-.buttons button:hover {
+.filters button:hover {
 	color: white;
 	background-color: #1D6154;
 }

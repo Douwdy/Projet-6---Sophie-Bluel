@@ -10,6 +10,7 @@ const editBtn = document.getElementById('editBtn'); // Localisation du bouton d'
 const loginBtn = document.getElementById('loginForm') // Localisation du bouton de connexion
 const editMode = document.getElementById('editmode'); // Localisation de la bannière de mode édition
 const header = document.querySelector('header'); // Localisation de l'en-tête
+const filterLoc = document.querySelector('.filters'); // Localisation des filtres
 
 
 // Vérification de validité du token
@@ -40,6 +41,21 @@ function checkToken() {
 
 checkToken();
 
+// Requête API pour récupérer les catégories
+fetch(`${apiLink}/categories`)
+  .then((response) => response.json())
+  .then((data) => {
+    // Créer un bouton pour chaque catégorie
+    data.forEach((category) => {
+      const button = document.createElement("button");
+      button.classList.add("category-button");
+      button.dataset.categoryId = category.name;
+      button.textContent = category.name;
+      // Ajouter le bouton à la page
+      filterLoc.appendChild(button);
+    });
+  });
+
 function refreshProjects() {
   // Requête API pour récupérer les projets
   fetch(`${apiLink}/works`)
@@ -62,13 +78,12 @@ function refreshProjects() {
       // Ajouter le projet à la liste de tous les projets
       allProjects.push(project);
     }
-
-    // Afficher les projets par catégorie
-    categoryButtons.forEach((button) => {
-      // Ajouter un eventListener pour chaque bouton de catégorie
-      button.addEventListener("click", () => {
+    // Ajouter un eventListener pour les filtres par catégories
+    filterLoc.addEventListener("click", (event) => {
+      // Vérifier si le clic est sur un bouton de catégorie
+      if (event.target.matches("[data-category-id]")) {
         // Récupérer l'ID de la catégorie du bouton
-        const categoryId = button.dataset.categoryId;
+        const categoryId = event.target.dataset.categoryId;
         // Créer un tableau pour stocker les projets à afficher
         let projects;
         // Si la catégorie est "All", afficher tous les projets, sinon, afficher les projets de la catégorie
@@ -78,9 +93,8 @@ function refreshProjects() {
           projects = projectsByCategory[categoryId] || [];
         }
         displayProjects(projects);
-      });
+      }
     });
-
     displayProjects(allProjects);
   });
 };
@@ -255,7 +269,7 @@ function addPhotoDisplay() {
   backToGalleryIcon.classList.add('fas', 'fa-arrow-left');
   backToGalleryIcon.id = 'backToGallery';
   backToGalleryIcon.style.visibility = 'visible';
-
+  // Crée l'icône pour la fermeture de la popup
   const closePopupIcon = document.createElement('i');
   closePopupIcon.classList.add('fa-solid', 'fa-xmark');
   closePopupIcon.id = 'closePopup';
@@ -577,10 +591,16 @@ loginBtn.addEventListener('click', loginDisplay); // Ajoute un eventListener pou
 document.getElementById('addPhoto').addEventListener('click', addPhotoDisplay); // Ajoute un eventListener pour l'affichage de la page d'ajout de projet
 
 editBtn.addEventListener('click', worksDisplay); // Ajoute un eventListener pour l'affichage de la page d'ajout de projet
-// Ajoute la classe active au bouton cliqué et supprime les autres
-categoryButtons.forEach(button => {
-  button.addEventListener('click', () => {
+
+// Ajoute un eventListener pour les filtres par catégories
+filterLoc.addEventListener('click', (event) => {
+  // Vérifie si le clic est sur un bouton de catégorie
+  if (event.target.matches('.category-button')) {
+    const button = event.target;
+    // Retire la classe "active" de tous les boutons
+    const categoryButtons = filterLoc.querySelectorAll('.category-button');
     categoryButtons.forEach(btn => btn.classList.remove("active"));
+    // Ajoute la classe "active" au bouton cliqué
     button.classList.add("active");
-  });
+  }
 });
