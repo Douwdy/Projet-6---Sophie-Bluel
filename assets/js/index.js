@@ -5,7 +5,6 @@ const categoryButtons = document.querySelectorAll("[data-category-id]"); // Loca
 const popup = document.getElementById('popup'); // Localisation de la popup
 const pageBody = document.querySelector('main'); // Localisation du contenu de la page
 const popupContent = document.getElementById('popupContent'); // Localisation du contenu de la popup
-const token = localStorage.getItem('token'); // Récupération du token depuis le localStorage
 const editBtn = document.getElementById('editBtn'); // Localisation du bouton d'édition
 const loginBtn = document.getElementById('loginForm') // Localisation du bouton de connexion
 const editMode = document.getElementById('editmode'); // Localisation de la bannière de mode édition
@@ -15,6 +14,7 @@ const filterLoc = document.querySelector('.filters'); // Localisation des filtre
 
 // Vérification de validité du token
 function checkToken() {
+  const token = localStorage.getItem('token');
   if (token) {
     // Décode le token et extrait la propriété "exp"
       const base64Url = token.split('.')[1];
@@ -500,6 +500,12 @@ function backToGallery() {
 
 // Supprime la photo du projet
 function deletePhoto(id) {
+  // Récupérer le token depuis le localStorage et vérifier s'il est présent sinon afficher un message d'erreur
+  const token = localStorage.getItem('token');
+  if (!token) {
+    console.error('Token introuvable');
+    return;
+  };
   // Envoie une requête fetch de type DELETE pour supprimer la photo
   fetch(`${apiLink}/works/${id}`, {
     method: 'DELETE',
@@ -589,12 +595,6 @@ function checkForm() {
   const photo = document.getElementById('photoImport').files[0];
   document.getElementById('submitPhoto').style.backgroundColor = (title && category && photo) ? '#1D6154' : '#ccc';
 };
-
-// Si le formulaire est soumis, empêche le rechargement de la page et envoie une nouvelle photo
-document.querySelector('form').addEventListener('submit', function(event) {
-  event.preventDefault();
-  sendNewPhoto();
-});
 
 // Si l'utilisateur est connecté, affiche la page d'ajout de projet, sinon affiche la page de connexion
 document.querySelector('form').addEventListener('submit', function(event) {
