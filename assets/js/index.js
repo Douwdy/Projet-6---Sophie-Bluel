@@ -127,10 +127,10 @@ refreshProjects();
         const loginForm = document.getElementById('login').querySelector('form');
         // Ajoute un p pour afficher un message d'erreur
         const errorMessage = document.createElement('p');
-        errorMessage.textContent = 'Erreur dans l’identifiant ou le mot de passe';
+        errorMessage.textContent = "Erreur dans l'identifiant ou le mot de passe";
         errorMessage.id = 'errorMessage';
         errorMessage.style.color = 'red';
-        // prevent the message from being added multiple times
+        // Supprime le message d'erreur s'il existe déjà
         if (document.getElementById('errorMessage')) {
           document.getElementById('errorMessage').remove();
         };
@@ -542,7 +542,7 @@ async function sendNewPhoto() {
   const category = document.getElementById('photoCategory').value;
 
   // Formater le titre pour prévenir les attaques par injection SQL et XSS
-  const titleFormatted = title.replace(/</g, "").replace(/>/g, "").replace(/&/g, "").replace(/"/g, "").replace(/'/g, "").replace(/\//g, "");
+  const titleFormatted = title.replace(/[<>&"'\/]/g, "");
 
   // Vérifier que les données du formulaire sont complètes sinon ajoute une bordure rouge aux champs manquants
   if (!image || !title || !category) {
