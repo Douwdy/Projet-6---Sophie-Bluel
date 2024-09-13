@@ -542,7 +542,7 @@ async function sendNewPhoto() {
   const category = document.getElementById('photoCategory').value;
 
   // Formater le titre pour prévenir les attaques par injection SQL et XSS
-  const titleFormatted = title.replace(/[<>&"'\/]/g, "");
+  const titleFormatted = title.replace(/[<>&"\/]/g, "");
 
   // Vérifier que les données du formulaire sont complètes sinon ajoute une bordure rouge aux champs manquants
   if (!image || !title || !category) {
