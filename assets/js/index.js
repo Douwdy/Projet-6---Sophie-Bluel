@@ -33,6 +33,8 @@ function checkToken() {
         loginBtn.textContent = 'logout';
         // Affiche la bannière de mode édition
         editMode.style.display = 'flex';
+        // Cache les filtres
+        filterLoc.style.visibility = 'hidden';
         // Ajoute une marge en haut de l'en-tête
         header.style.marginTop = '100px';
       };
@@ -167,6 +169,8 @@ refreshProjects();
         loginBtn.style.fontWeight = '';
         // Affiche la bannière de mode édition
         editMode.style.display = 'flex';
+        // Cache les filtres
+        filterLoc.style.visibility = 'hidden';
         // Ajoute une marge en haut de l'en-tête
         header.style.marginTop = '100px';
     })
@@ -214,6 +218,8 @@ function loginDisplay() {
     loginBtn.style.fontWeight = '';
     // Cache la bannière de mode édition
     editMode.style.display = 'none';
+    // Affiche les filtres
+    filterLoc.style.visibility = '';
     // Retire la marge en haut de l'en-tête
     header.style.marginTop = '';
   } else {

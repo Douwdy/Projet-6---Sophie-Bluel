@@ -208,7 +208,7 @@ li:hover {
 }
 
 .gallery {
-	width: 100%;
+	width: 80%;
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
 	grid-column-gap: 20px;
@@ -217,7 +217,7 @@ li:hover {
 
 .gallery img {
 	width: 100%;
-	height: 485px;
+	height: 405px;
 	object-fit: cover;
 }
 
