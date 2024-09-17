@@ -185,11 +185,10 @@ function displayProjects(projects) {
   galleryLoc.innerHTML = "";
   // Pour chaque projet, crée un élément HTML
   projects.forEach((project) => {
-    // Crée un élément div pour le projet
-    const projectElement = document.createElement("div");
+    // Crée un élément figure pour le projet
     const projectFigure = document.createElement("figure");
     projectFigure.id = project.id;
-    // Crée un élément figure pour le projet
+    // Crée un élément img pour le projet
     const projectImage = document.createElement("img");
     projectImage.src = project.imageUrl;
     projectImage.alt = project.title;
@@ -200,8 +199,7 @@ function displayProjects(projects) {
     projectFigure.appendChild(projectImage);
     projectFigure.appendChild(projectCaption);
     // Ajoute le projet à la galerie
-    projectElement.appendChild(projectFigure);
-    galleryLoc.appendChild(projectElement);
+    galleryLoc.appendChild(projectFigure);
   });
 };
 
