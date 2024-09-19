@@ -46,6 +46,10 @@ checkToken();
 // Requête API pour récupérer les catégories
 fetch(`${apiLink}/categories`)
   .then((response) => response.json())
+  .catch((error) => {
+    console.error("Erreur lors de la récupération des catégories", error);
+    alert("Nous sommes désolés, une erreur est survenue lors de la récupération des catégories. Veuillez réessayer plus tard.");
+  })
   .then((data) => {
     // Créer un bouton pour chaque catégorie
     data.forEach((category) => {
@@ -56,12 +60,20 @@ fetch(`${apiLink}/categories`)
       // Ajouter le bouton à la page
       filterLoc.appendChild(button);
     });
+  })
+  .catch((error) => {
+    console.error("Erreur lors de la récupération des catégories", error);
+    alert("Nous sommes désolés, une erreur est survenue lors de la récupération des catégories. Veuillez réessayer plus tard.");
   });
 
 function refreshProjects() {
   // Requête API pour récupérer les projets
   fetch(`${apiLink}/works`)
   .then((response) => response.json())
+  .catch((error) => {
+    console.error("Erreur lors de la récupération des projets", error);
+    alert("Nous sommes désolés, une erreur est survenue lors de la récupération des projets. Veuillez réessayer plus tard.");
+  })
   .then((data) => {
     // Création d'un objet pour grouper les projets par catégorie
     const projectsByCategory = {};
@@ -98,6 +110,10 @@ function refreshProjects() {
       }
     });
     displayProjects(allProjects);
+  })
+  .catch((error) => {
+    console.error("Erreur lors de la récupération des projets", error);
+    alert("Nous sommes désolés, une erreur est survenue lors de la récupération des projets. Veuillez réessayer plus tard.");
   });
 };
 refreshProjects();
@@ -143,6 +159,10 @@ refreshProjects();
       // Si la réponse est OK, on récupère les données de la réponse
       return response.json();
     })
+    .catch(error => {
+      console.error(error);
+      alert("Une erreur est survenue lors de la connexion. Veuillez réessayer plus tard.");
+    })
     .then(data => {
         // On vide les champs de la page de connexion
         document.getElementById('emailLogin').value = '';
@@ -176,6 +196,7 @@ refreshProjects();
     })
     .catch(error => {
       console.error(error);
+      alert("Une erreur est survenue lors de la connexion. Veuillez réessayer plus tard.");
     });
   };
 
@@ -379,6 +400,10 @@ function addPhotoDisplay() {
     // Récupère les catégories de projets
     fetch(`${apiLink}/categories`)
     .then((response) => response.json())
+    .catch((error) => {
+      console.error("Erreur lors de la récupération des catégories", error);
+      alert("Nous sommes désolés, une erreur est survenue lors de la récupération des catégories. Veuillez réessayer plus tard.");
+    })
     .then((data) => {
       // Affiche les catégories dans le formulaire
       const select = document.getElementById('photoCategory');
@@ -397,6 +422,10 @@ function addPhotoDisplay() {
         // Insère l'option dans le select
         select.appendChild(option);
       });
+    })
+    .catch((error) => {
+      console.error("Erreur lors de la récupération des catégories", error);
+      alert("Nous sommes désolés, une erreur est survenue lors de la récupération des catégories. Veuillez réessayer plus tard.");
     });
 // Localisation de l'input d'importation de la photo
 const photoInput = document.getElementById('photoImport');
@@ -528,6 +557,7 @@ function deletePhoto(id) {
   })
   .catch(error => {
     console.error(error);
+    alert("Une erreur est survenue lors de la suppression de la photo. Veuillez réessayer plus tard.");
   });
 };
 
@@ -589,6 +619,7 @@ async function sendNewPhoto() {
     }
   } catch (error) {
     console.error('Une erreur est survenue lors de la requête.', error);
+    alert("Une erreur est survenue lors de l'envoi de la photo. Veuillez réessayer plus tard.");
   }
 };
 
