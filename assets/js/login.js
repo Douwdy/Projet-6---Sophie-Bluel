@@ -53,8 +53,3 @@ const apiLink = "http://127.0.0.1:5678/api" // Lien vers l'API
       console.error('Une erreur est survenue lors de la requête.', error);
     });
   }
-
-  document.querySelector('form').addEventListener('submit', function(event) {
-    event.preventDefault();
-    login(); // Envoie une requête POST pour se connecter
-  });
