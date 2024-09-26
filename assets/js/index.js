@@ -48,7 +48,7 @@ fetch(`${apiLink}/categories`)
   .then((response) => response.json())
   .catch((error) => {
     console.error("Erreur lors de la récupération des catégories", error);
-    alert("Nous sommes désolés, une erreur est survenue lors de la récupération des catégories. Veuillez réessayer plus tard.");
+    // alert("Nous sommes désolés, une erreur est survenue lors de la récupération des catégories. Veuillez réessayer plus tard.");
   })
   .then((data) => {
     // Créer un bouton pour chaque catégorie
@@ -57,13 +57,16 @@ fetch(`${apiLink}/categories`)
       button.classList.add("category-button");
       button.dataset.categoryId = category.name;
       button.textContent = category.name;
-      // Ajouter le bouton à la page
-      filterLoc.appendChild(button);
+      // Vérifie si filterLoc est dans le DOM
+      if (filterLoc) {
+        // Ajouter le bouton à la page
+        filterLoc.appendChild(button);
+      }
     });
   })
   .catch((error) => {
     console.error("Erreur lors de la récupération des catégories", error);
-    alert("Nous sommes désolés, une erreur est survenue lors de la récupération des catégories. Veuillez réessayer plus tard.");
+    // alert("Nous sommes désolés, une erreur est survenue lors de la récupération des catégories. Veuillez réessayer plus tard.");
   });
 
 function refreshProjects() {
@@ -72,7 +75,7 @@ function refreshProjects() {
   .then((response) => response.json())
   .catch((error) => {
     console.error("Erreur lors de la récupération des projets", error);
-    alert("Nous sommes désolés, une erreur est survenue lors de la récupération des projets. Veuillez réessayer plus tard.");
+    // alert("Nous sommes désolés, une erreur est survenue lors de la récupération des projets. Veuillez réessayer plus tard.");
   })
   .then((data) => {
     // Création d'un objet pour grouper les projets par catégorie
@@ -92,8 +95,9 @@ function refreshProjects() {
       // Ajouter le projet à la liste de tous les projets
       allProjects.push(project);
     }
-    // Ajouter un eventListener pour les filtres par catégories
-    filterLoc.addEventListener("click", (event) => {
+    // Vérifier si filterLoc est présent avant d'ajouter un eventListener pour les filtres par catégories
+    if (filterLoc) {
+      filterLoc.addEventListener("click", (event) => {
       // Vérifier si le clic est sur un bouton de catégorie
       if (event.target.matches("[data-category-id]")) {
         // Récupérer l'ID de la catégorie du bouton
@@ -102,18 +106,19 @@ function refreshProjects() {
         let projects;
         // Si la catégorie est "All", afficher tous les projets, sinon, afficher les projets de la catégorie
         if (categoryId === "All") {
-          projects = allProjects;
+        projects = allProjects;
         } else {
-          projects = projectsByCategory[categoryId] || [];
+        projects = projectsByCategory[categoryId] || [];
         }
         displayProjects(projects);
       }
-    });
+      });
+    }
     displayProjects(allProjects);
   })
   .catch((error) => {
     console.error("Erreur lors de la récupération des projets", error);
-    alert("Nous sommes désolés, une erreur est survenue lors de la récupération des projets. Veuillez réessayer plus tard.");
+    // alert("Nous sommes désolés, une erreur est survenue lors de la récupération des projets. Veuillez réessayer plus tard.");
   });
 };
 refreshProjects();
@@ -123,6 +128,7 @@ refreshProjects();
     // Récupération des valeurs des champs de saisie pour l'email et le mot de passe
     const email = document.getElementById('emailLogin').value;
     const password = document.getElementById('passwordLogin').value;
+
     // Envoi d'une requête POST à l'API pour tenter de se connecter
     fetch(`${apiLink}/users/login`, {
       method: 'POST',
@@ -141,82 +147,67 @@ refreshProjects();
         // Si la réponse n'est pas OK, on gère l'erreur et on l'indique à l'utilisateur
         document.getElementById('passwordLogin').value = '';
         document.getElementById('passwordLogin').classList.add('error-login');
-        // Selectionne le formulaire de connexion
+        // Sélectionne le formulaire de connexion et ajoute un message d'erreur
         const loginForm = document.getElementById('login').querySelector('form');
-        // Ajoute un p pour afficher un message d'erreur
         const errorMessage = document.createElement('p');
         errorMessage.textContent = "Erreur dans l'identifiant ou le mot de passe";
         errorMessage.id = 'errorMessage';
         errorMessage.style.color = 'red';
-        // Supprime le message d'erreur s'il existe déjà
         if (document.getElementById('errorMessage')) {
           document.getElementById('errorMessage').remove();
-        };
-        // Ajoute le message d'erreur au formulaire de connexion
+        }
         loginForm.appendChild(errorMessage);
         throw new Error(`HTTP error! status: ${response.status}`);
-      };
-      // Si la réponse est OK, on récupère les données de la réponse
+      }
       return response.json();
     })
     .then(data => {
-        // On vide les champs de la page de connexion
-        document.getElementById('emailLogin').value = '';
-        document.getElementById('passwordLogin').value = '';
-        // On retire la classe d'erreur de mot de passe
-        const passwordLogin = document.getElementById('passwordLogin');
-        if (passwordLogin.classList.contains('error-login')) {
-          passwordLogin.classList.remove('error-login');
-        }
-        // On retire le message d'erreur
-        const errorMessage = document.getElementById('errorMessage');
-        if (errorMessage) {
-          errorMessage.remove();
-        }
-        // Retire la page de connexion
-        loginDisplay();
-        // Sauvegarde le token dans le localStorage
-        localStorage.setItem('token', data.token);
-        // Affiche le bouton d'édition
-        editBtn.style.display = 'unset';
-        // Change le texte du bouton de connexion en "logout"
-        loginBtn.textContent = 'logout';
-        // Retire le style gras du bouton de connexion
-        loginBtn.style.fontWeight = '';
-        // Affiche la bannière de mode édition
-        editMode.style.display = 'flex';
-        // Cache les filtres
-        filterLoc.style.visibility = 'hidden';
-        // Ajoute une marge en haut de l'en-tête
-        header.style.marginTop = '100px';
+      // Si la connexion est réussie, on vide les champs de saisie et on retire les messages d'erreur
+      document.getElementById('emailLogin').value = '';
+      document.getElementById('passwordLogin').value = '';
+      const passwordLogin = document.getElementById('passwordLogin');
+      if (passwordLogin.classList.contains('error-login')) {
+        passwordLogin.classList.remove('error-login');
+      }
+      const errorMessage = document.getElementById('errorMessage');
+      if (errorMessage) {
+        errorMessage.remove();
+      }
+      // Stocke le token dans le localStorage
+      localStorage.setItem('token', data.token);
+      // Redirige vers la page index.html
+      window.location.href = 'index.html';
     })
     .catch(error => {
-      console.error(error);
+      // Gère les erreurs de la requête
+      console.error('Une erreur est survenue lors de la requête.', error);
     });
-  };
+}
 
 // Fonction pour afficher les projets
 function displayProjects(projects) {
-  // Vide la galerie de projets
-  galleryLoc.innerHTML = "";
-  // Pour chaque projet, crée un élément HTML
-  projects.forEach((project) => {
-    // Crée un élément figure pour le projet
-    const projectFigure = document.createElement("figure");
-    projectFigure.id = project.id;
-    // Crée un élément img pour le projet
-    const projectImage = document.createElement("img");
-    projectImage.src = project.imageUrl;
-    projectImage.alt = project.title;
-    // Crée un élément figcaption pour le projet
-    const projectCaption = document.createElement("figcaption");
-    projectCaption.textContent = project.title;
-    // Ajoute les éléments au projet
-    projectFigure.appendChild(projectImage);
-    projectFigure.appendChild(projectCaption);
-    // Ajoute le projet à la galerie
-    galleryLoc.appendChild(projectFigure);
-  });
+  // Vérifie si galleryLoc est présent avant de vider la galerie de projets
+  if (galleryLoc) {
+    galleryLoc.innerHTML = "";
+    // Pour chaque projet, crée un élément HTML
+    projects.forEach((project) => {
+      // Crée un élément figure pour le projet
+      const projectFigure = document.createElement("figure");
+      projectFigure.id = project.id;
+      // Crée un élément img pour le projet
+      const projectImage = document.createElement("img");
+      projectImage.src = project.imageUrl;
+      projectImage.alt = project.title;
+      // Crée un élément figcaption pour le projet
+      const projectCaption = document.createElement("figcaption");
+      projectCaption.textContent = project.title;
+      // Ajoute les éléments au projet
+      projectFigure.appendChild(projectImage);
+      projectFigure.appendChild(projectCaption);
+      // Ajoute le projet à la galerie
+      galleryLoc.appendChild(projectFigure);
+    });
+  }
 };
 
 // Fonction pour afficher la page de connexion
@@ -237,16 +228,10 @@ function loginDisplay() {
     // Retire la marge en haut de l'en-tête
     header.style.marginTop = '';
   } else {
-    // Sélectionne l'élément de la page de connexion et le corps de la page
-    const login = document.getElementById('login');
-    // Ajoute ou supprime la classe "reverted" de l'élément de la page de connexion
-    login.classList.toggle('reverted');
-    loginBtn.classList.toggle('bold');
-    // Définit les styles de l'élément de la page de connexion et du corps de la page en fonction de la présence de la classe "reverted"
-    login.style.cssText = login.classList.contains('reverted') ? '' : 'display: none;';
-    pageBody.style.cssText = login.classList.contains('reverted') ? 'display: none;' : '';
-  };
-};
+    // Navigates to login.html
+    window.location.href = 'login.html';
+  }
+}
 
 // Affiche la popup pour ajouter un nouveau projet
 function worksDisplay() {
@@ -397,7 +382,7 @@ function addPhotoDisplay() {
     .then((response) => response.json())
     .catch((error) => {
       console.error("Erreur lors de la récupération des catégories", error);
-      alert("Nous sommes désolés, une erreur est survenue lors de la récupération des catégories. Veuillez réessayer plus tard.");
+      // alert("Nous sommes désolés, une erreur est survenue lors de la récupération des catégories. Veuillez réessayer plus tard.");
     })
     .then((data) => {
       // Affiche les catégories dans le formulaire
@@ -420,7 +405,7 @@ function addPhotoDisplay() {
     })
     .catch((error) => {
       console.error("Erreur lors de la récupération des catégories", error);
-      alert("Nous sommes désolés, une erreur est survenue lors de la récupération des catégories. Veuillez réessayer plus tard.");
+      // alert("Nous sommes désolés, une erreur est survenue lors de la récupération des catégories. Veuillez réessayer plus tard.");
     });
 // Localisation de l'input d'importation de la photo
 const photoInput = document.getElementById('photoImport');
@@ -552,7 +537,7 @@ function deletePhoto(id) {
   })
   .catch(error => {
     console.error(error);
-    alert("Une erreur est survenue lors de la suppression de la photo. Veuillez réessayer plus tard.");
+    // alert("Une erreur est survenue lors de la suppression de la photo. Veuillez réessayer plus tard.");
   });
 };
 
@@ -614,7 +599,7 @@ async function sendNewPhoto() {
     }
   } catch (error) {
     console.error('Une erreur est survenue lors de la requête.', error);
-    alert("Une erreur est survenue lors de l'envoi de la photo. Veuillez réessayer plus tard.");
+    // alert("Une erreur est survenue lors de l'envoi de la photo. Veuillez réessayer plus tard.");
   }
 };
 
@@ -633,25 +618,35 @@ document.querySelector('form').addEventListener('submit', function(event) {
 });
 
 // EventListener pour la fermeture de la popup
-document.querySelector('.fa-xmark').addEventListener('click', function() {
-  popup.style.display = "none";
-});
+const closePopupIcon = document.querySelector('.fa-xmark');
+if (closePopupIcon) {
+  closePopupIcon.addEventListener('click', function() {
+    popup.style.display = "none";
+  });
+}
 
 loginBtn.addEventListener('click', loginDisplay); // Ajoute un eventListener pour l'affichage de la page de connexion
 
-document.getElementById('addPhoto').addEventListener('click', addPhotoDisplay); // Ajoute un eventListener pour l'affichage de la page d'ajout de projet
+const addPhotoButton = document.getElementById('addPhoto');
+if (addPhotoButton) {
+  addPhotoButton.addEventListener('click', addPhotoDisplay); // Ajoute un eventListener pour l'affichage de la page d'ajout de projet
+}
 
-editBtn.addEventListener('click', worksDisplay); // Ajoute un eventListener pour l'affichage de la page d'ajout de projet
+if (editBtn) {
+  editBtn.addEventListener('click', worksDisplay); // Ajoute un eventListener pour l'affichage de la page d'ajout de projet
+}
 
-// Ajoute un eventListener pour les filtres par catégories
-filterLoc.addEventListener('click', (event) => {
-  // Vérifie si le clic est sur un bouton de catégorie
-  if (event.target.matches('.category-button')) {
-    const button = event.target;
-    // Retire la classe "active" de tous les boutons
-    const categoryButtons = filterLoc.querySelectorAll('.category-button');
-    categoryButtons.forEach(btn => btn.classList.remove("active"));
-    // Ajoute la classe "active" au bouton cliqué
-    button.classList.add("active");
-  }
-});
+// Vérifie si filterLoc est présent avant d'ajouter un eventListener pour les filtres par catégories
+if (filterLoc) {
+  filterLoc.addEventListener('click', (event) => {
+    // Vérifie si le clic est sur un bouton de catégorie
+    if (event.target.matches('.category-button')) {
+      const button = event.target;
+      // Retire la classe "active" de tous les boutons
+      const categoryButtons = filterLoc.querySelectorAll('.category-button');
+      categoryButtons.forEach(btn => btn.classList.remove("active"));
+      // Ajoute la classe "active" au bouton cliqué
+      button.classList.add("active");
+    }
+  });
+}
