@@ -159,10 +159,6 @@ refreshProjects();
       // Si la réponse est OK, on récupère les données de la réponse
       return response.json();
     })
-    .catch(error => {
-      console.error(error);
-      alert("Une erreur est survenue lors de la connexion. Veuillez réessayer plus tard.");
-    })
     .then(data => {
         // On vide les champs de la page de connexion
         document.getElementById('emailLogin').value = '';
@@ -196,7 +192,6 @@ refreshProjects();
     })
     .catch(error => {
       console.error(error);
-      alert("Une erreur est survenue lors de la connexion. Veuillez réessayer plus tard.");
     });
   };
 
