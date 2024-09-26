@@ -48,7 +48,7 @@ fetch(`${apiLink}/categories`)
   .then((response) => response.json())
   .catch((error) => {
     console.error("Erreur lors de la récupération des catégories", error);
-    // alert("Nous sommes désolés, une erreur est survenue lors de la récupération des catégories. Veuillez réessayer plus tard.");
+    alert("Nous sommes désolés, une erreur est survenue lors de la récupération des catégories. Veuillez réessayer plus tard.");
   })
   .then((data) => {
     // Créer un bouton pour chaque catégorie
@@ -66,7 +66,7 @@ fetch(`${apiLink}/categories`)
   })
   .catch((error) => {
     console.error("Erreur lors de la récupération des catégories", error);
-    // alert("Nous sommes désolés, une erreur est survenue lors de la récupération des catégories. Veuillez réessayer plus tard.");
+    alert("Nous sommes désolés, une erreur est survenue lors de la récupération des catégories. Veuillez réessayer plus tard.");
   });
 
 function refreshProjects() {
@@ -75,7 +75,7 @@ function refreshProjects() {
   .then((response) => response.json())
   .catch((error) => {
     console.error("Erreur lors de la récupération des projets", error);
-    // alert("Nous sommes désolés, une erreur est survenue lors de la récupération des projets. Veuillez réessayer plus tard.");
+    alert("Nous sommes désolés, une erreur est survenue lors de la récupération des projets. Veuillez réessayer plus tard.");
   })
   .then((data) => {
     // Création d'un objet pour grouper les projets par catégorie
@@ -118,7 +118,7 @@ function refreshProjects() {
   })
   .catch((error) => {
     console.error("Erreur lors de la récupération des projets", error);
-    // alert("Nous sommes désolés, une erreur est survenue lors de la récupération des projets. Veuillez réessayer plus tard.");
+    alert("Nous sommes désolés, une erreur est survenue lors de la récupération des projets. Veuillez réessayer plus tard.");
   });
 };
 refreshProjects();
@@ -382,7 +382,7 @@ function addPhotoDisplay() {
     .then((response) => response.json())
     .catch((error) => {
       console.error("Erreur lors de la récupération des catégories", error);
-      // alert("Nous sommes désolés, une erreur est survenue lors de la récupération des catégories. Veuillez réessayer plus tard.");
+      alert("Nous sommes désolés, une erreur est survenue lors de la récupération des catégories. Veuillez réessayer plus tard.");
     })
     .then((data) => {
       // Affiche les catégories dans le formulaire
@@ -405,7 +405,7 @@ function addPhotoDisplay() {
     })
     .catch((error) => {
       console.error("Erreur lors de la récupération des catégories", error);
-      // alert("Nous sommes désolés, une erreur est survenue lors de la récupération des catégories. Veuillez réessayer plus tard.");
+      alert("Nous sommes désolés, une erreur est survenue lors de la récupération des catégories. Veuillez réessayer plus tard.");
     });
 // Localisation de l'input d'importation de la photo
 const photoInput = document.getElementById('photoImport');
@@ -537,7 +537,7 @@ function deletePhoto(id) {
   })
   .catch(error => {
     console.error(error);
-    // alert("Une erreur est survenue lors de la suppression de la photo. Veuillez réessayer plus tard.");
+    alert("Une erreur est survenue lors de la suppression de la photo. Veuillez réessayer plus tard.");
   });
 };
 
@@ -599,7 +599,7 @@ async function sendNewPhoto() {
     }
   } catch (error) {
     console.error('Une erreur est survenue lors de la requête.', error);
-    // alert("Une erreur est survenue lors de l'envoi de la photo. Veuillez réessayer plus tard.");
+    alert("Une erreur est survenue lors de l'envoi de la photo. Veuillez réessayer plus tard.");
   }
 };
 
